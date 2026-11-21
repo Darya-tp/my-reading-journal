@@ -1,0 +1,1 @@
+Windows preview only. 1) Right click ZIP and Extract All. 2) Double click My_Reading_Journal_v1_3.html. 3) Open in Microsoft Edge or Google Chrome. Do NOT upload to GitHub yet. This local preview will not automatically show books stored on your Android phone; you may import a backup if you choose, but please keep a copy.
