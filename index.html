@@ -626,6 +626,89 @@ body.dragging{overscroll-behavior:none}
 /* Multi-genre field, matching free-text Tags input. */
 #bookGenre{direction:auto;min-width:0;width:100%}
 .review-body.theme-dark #bookGenre{color:var(--page-text,#f5eee7)}
+
+/* v1.8.5: Every line uses its section font, even after Android IME or formatted paste creates nested spans. */
+.panel .rich-editor *,
+.review-body.is-locked .panel .view-text * {font-family:inherit !important}
+
+/* v1.8.8: Font sizing, custom card layout, and per-book visibility */
+.journal-panels{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:11px;align-items:start;direction:ltr;margin:13px 0}
+.journal-panels > [data-card-section]{min-width:0;grid-column:span 6;margin:0!important;align-self:start;direction:ltr}
+.journal-panels > [data-card-section="review"],.journal-panels > [data-card-section="quotes"],.journal-panels > [data-card-section="fanart"]{grid-column:span 12}
+.journal-panels > .fanart-board{margin-top:0!important}
+@media (min-width:800px){
+ .journal-panels{gap:18px}
+ .journal-panels > [data-card-section="review"],.journal-panels > [data-card-section="quotes"]{grid-column:span 6}
+}
+.journal-panels > [data-card-section][data-layout-span="6"]{grid-column:span 6}
+.journal-panels > [data-card-section][data-layout-span="8"]{grid-column:span 8}
+.journal-panels > [data-card-section][data-layout-span="10"]{grid-column:span 10}
+.journal-panels > [data-card-section][data-layout-span="12"]{grid-column:span 12}
+.journal-panels .panel-font-row{flex-wrap:wrap;gap:5px;justify-content:flex-start;margin:4px 0 10px}
+.journal-panels .section-font{max-width:100%;flex:1 1 84px;min-width:75px}
+.journal-panels .font-size-label{margin-left:auto}
+.journal-panels .font-size-select{background:#f7f8f6;border:1px solid #bccbd0;border-radius:6px;color:#38546a;padding:5px 4px;font-size:11px;width:60px;flex:none}
+.layout-action-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:space-between;border:1px solid #d5dfe2;background:#e9eff0b5;border-radius:11px;padding:9px 12px;margin:15px 0 10px;direction:ltr}
+.layout-action-bar button{border:1px solid #95aabb;color:#2a4a62;background:#fafbf7;padding:9px 12px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer}
+.layout-action-bar[aria-pressed="true"]{background:#e2e9ef;border-color:#90a7b5}
+.layout-action-bar[aria-pressed="true"] button{background:#233d57;color:#f6ead6;border-color:#233d57}
+.layout-action-bar #boxLayoutReset{border-color:#bfced2;background:transparent;color:#537086;font-size:10px;padding:7px 9px}
+.layout-action-bar #boxLayoutReset[hidden]{display:none}
+.layout-hint{font-size:10px;color:#6f8494;line-height:1.6;flex:1 1 160px}
+.panel-move-handle{display:none;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;min-width:30px;min-height:30px;background:#e9eef0;border:1px solid #b6c9d1;color:#38546a;border-radius:8px;padding:3px 7px;font-size:21px;line-height:1}
+.journal-panels.layout-editing .panel-move-handle{display:inline-grid;place-items:center}
+.journal-panels.layout-editing >[data-card-section]{outline:1px dashed #7791a7;outline-offset:-2px}
+.journal-panels .panel-title{gap:7px}
+.journal-panels .panel-title:after{display:none}
+.journal-panels .panel-title .palette-trigger{margin-left:auto}
+.journal-panels .fanart-header{flex-wrap:wrap}
+.journal-panels .fanart-header .panel-move-handle{order:4}
+.panel-width-tools{display:none;align-items:center;flex-wrap:wrap;gap:5px;margin:9px 0 0;padding:8px 0 0;border-top:1px dashed #b8c8d0;direction:ltr;color:#527088;font-size:10px;line-height:1.3}
+.journal-panels.layout-editing .panel-width-tools{display:flex}
+.panel-width-tools .panel-width-select{font:11px system-ui;background:#fafbf8;color:#28455f;border:1px solid #bccbd2;border-radius:7px;padding:7px 6px;min-height:32px}
+.panel-move-step{font-size:16px;min-width:29px;min-height:32px;border:1px solid #b8c9d1;border-radius:8px;background:#f5f8f7;color:#38546a}
+.panel-width-grab{font-size:16px;min-height:33px;min-width:37px;display:inline-grid;place-items:center;background:#e2e9ed;color:#254b64;border:1px solid #a6bac6;border-radius:8px;touch-action:none;cursor:ew-resize;user-select:none}
+.panel-width-tools .width-help{font-size:9px;color:#728b9b}
+.journal-panels .layout-dragging{opacity:.55;outline:2px dashed #5c89a7!important}
+.journal-panels .layout-drop-target{outline:3px solid #ba9863!important;outline-offset:-2px;box-shadow:0 0 0 3px #dfc69135}
+.review-body.is-locked .layout-action-bar,.review-body.is-locked .panel-width-tools,.review-body.is-locked .panel-move-handle{display:none!important}
+.journal-panels .view-text{overflow-wrap:anywhere}
+/* v1.8.7: Per-card display preferences. Edited content is never discarded. */
+.card-visibility-option{display:flex;align-items:center;gap:7px;flex-wrap:wrap;cursor:pointer;direction:ltr;margin:10px 0 1px;padding:8px 9px;border:1px solid #c2d1d8;border-radius:9px;background:#f1f5f5b8;color:#3b5870;font:600 10px/1.35 system-ui,sans-serif;user-select:none;-webkit-user-select:none}
+.card-visibility-option input{appearance:auto;accent-color:#375a73;width:17px;height:17px;min-width:17px;margin:0;cursor:pointer}
+.card-visibility-option .visibility-hint{font-weight:400;color:#698392;font-size:9px}
+.card-visibility-option:has(input:checked){background:#e2ebee;border-color:#96b1c0;color:#24445e}
+.review-body.theme-dark .card-visibility-option{background:#e6eaed;color:#29465b;border-color:#9daebc}
+.review-body.is-locked .card-visibility-option{display:none!important}
+.review-body.is-locked .journal-panels > [data-card-section][data-hide-on-lock="true"]{display:none!important}
+.review-body.is-locked .journal-panels:not(:has(> [data-card-section]:not([data-hide-on-lock="true"]))){display:none!important}
+/* v1.8.8: Independent horizontal alignment, preserving neighboring cards. */
+.layout-side-zones{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:3px 0 14px;direction:ltr}
+.layout-side-zones.is-active{display:grid}
+.layout-side-zone{min-height:60px;border:2px dashed #a6b9c7;border-radius:11px;background:#e7eff0;color:#375c74;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;pointer-events:none;font:700 12px system-ui,sans-serif;transition:background .1s,border-color .1s}
+.layout-side-zone small{font:400 10px system-ui,sans-serif;color:#658293}
+.layout-side-zone.is-target{border:2px solid #b69962;background:#fcf0ce;color:#69512c;box-shadow:inset 0 0 0 2px #d9bd853d}
+.panel-width-tools .panel-side-select{font:11px system-ui;background:#fafbf8;color:#28455f;border:1px solid #bccbd2;border-radius:7px;padding:7px 6px;min-height:32px}
+.journal-panels > [data-card-section][data-layout-side="left"]:not([data-layout-span]){grid-column:1 / span 6}
+.journal-panels > [data-card-section][data-layout-side="right"]:not([data-layout-span]){grid-column:7 / span 6}
+.journal-panels > [data-card-section="review"][data-layout-side]:not([data-layout-span]),
+.journal-panels > [data-card-section="quotes"][data-layout-side]:not([data-layout-span]),
+.journal-panels > [data-card-section="fanart"][data-layout-side]:not([data-layout-span]){grid-column:1 / span 12}
+@media(min-width:800px){
+.journal-panels > [data-card-section="review"][data-layout-side="left"]:not([data-layout-span]),
+.journal-panels > [data-card-section="quotes"][data-layout-side="left"]:not([data-layout-span]){grid-column:1 / span 6}
+.journal-panels > [data-card-section="review"][data-layout-side="right"]:not([data-layout-span]),
+.journal-panels > [data-card-section="quotes"][data-layout-side="right"]:not([data-layout-span]){grid-column:7 / span 6}
+}
+.journal-panels > [data-card-section][data-layout-side="left"][data-layout-span="6"]{grid-column:1 / span 6}
+.journal-panels > [data-card-section][data-layout-side="right"][data-layout-span="6"]{grid-column:7 / span 6}
+.journal-panels > [data-card-section][data-layout-side="left"][data-layout-span="8"]{grid-column:1 / span 8}
+.journal-panels > [data-card-section][data-layout-side="right"][data-layout-span="8"]{grid-column:5 / span 8}
+.journal-panels > [data-card-section][data-layout-side="left"][data-layout-span="10"]{grid-column:1 / span 10}
+.journal-panels > [data-card-section][data-layout-side="right"][data-layout-span="10"]{grid-column:3 / span 10}
+.journal-panels > [data-card-section][data-layout-side][data-layout-span="12"]{grid-column:1 / span 12}
+@media(max-width:390px){.journal-panels{gap:8px}.journal-panels>.panel{padding:10px 9px}.journal-panels .panel-title{font-size:10px}.journal-panels .font-size-label{margin-left:0}.journal-panels .panel-font-row label{font-size:8px}.journal-panels .font-size-select{width:54px}.journal-panels .panel-resize-handle{min-width:34px}}
+
 </style>
 </head>
 <body>
@@ -730,7 +813,9 @@ body.dragging{overscroll-behavior:none}
       </div>
       </div></div>
       <div class="vibe-caption" id="fontPreview">A little story, worth remembering.</div>
-      <div class="highlight-note">✦ Select any words in a text box to reveal the highlighter palette.</div><div class="details-row"><div data-card-section="tropes" class="panel small-panel"><div class="panel-title">TROPES<button type="button" class="palette-trigger" data-color-section="tropes" aria-label="Tropes card colours" title="Choose card colours"><span class="palette-sample" aria-hidden="true"></span>🎨</button></div><div class="panel-font-row"><label for="font-tropes">FONT</label><select id="font-tropes" class="section-font" data-section="tropes"></select></div><textarea id="bookTropes" placeholder="Tropes, tags, favourite themes…"></textarea><div class="panel-resize-row"><button type="button" class="panel-resize-handle" data-section="tropes" aria-label="Drag to resize tropes">↕</button></div></div><div data-card-section="summary" class="panel small-panel"><div class="panel-title">SUMMARY<button type="button" class="palette-trigger" data-color-section="summary" aria-label="Summary card colours" title="Choose card colours"><span class="palette-sample" aria-hidden="true"></span>🎨</button></div><div class="panel-font-row"><label for="font-summary">FONT</label><select id="font-summary" class="section-font" data-section="summary"></select></div><textarea id="bookSummary" placeholder="Your story summary…"></textarea><div class="panel-resize-row"><button type="button" class="panel-resize-handle" data-section="summary" aria-label="Drag to resize summary">↕</button></div></div></div>
+      <div class="highlight-note">✦ Select any words in a text box to reveal the highlighter palette.</div>
+      <div class="layout-action-bar" id="layoutActionBar" aria-pressed="false"><button type="button" id="boxArrangeToggle">⠿ Arrange Boxes</button><button type="button" id="boxLayoutReset" hidden>↺ Reset Layout</button><span class="layout-hint" id="layoutActionHint">Change font sizes or tick Hide when locked. Turn on Arrange to move cards.</span></div>
+      <div class="details-row"><div data-card-section="tropes" class="panel small-panel"><div class="panel-title">TROPES<button type="button" class="palette-trigger" data-color-section="tropes" aria-label="Tropes card colours" title="Choose card colours"><span class="palette-sample" aria-hidden="true"></span>🎨</button></div><div class="panel-font-row"><label for="font-tropes">FONT</label><select id="font-tropes" class="section-font" data-section="tropes"></select></div><textarea id="bookTropes" placeholder="Tropes, tags, favourite themes…"></textarea><div class="panel-resize-row"><button type="button" class="panel-resize-handle" data-section="tropes" aria-label="Drag to resize tropes">↕</button></div></div><div data-card-section="summary" class="panel small-panel"><div class="panel-title">SUMMARY<button type="button" class="palette-trigger" data-color-section="summary" aria-label="Summary card colours" title="Choose card colours"><span class="palette-sample" aria-hidden="true"></span>🎨</button></div><div class="panel-font-row"><label for="font-summary">FONT</label><select id="font-summary" class="section-font" data-section="summary"></select></div><textarea id="bookSummary" placeholder="Your story summary…"></textarea><div class="panel-resize-row"><button type="button" class="panel-resize-handle" data-section="summary" aria-label="Drag to resize summary">↕</button></div></div></div>
       <div class="desktop-review-columns">
       <div data-card-section="review" class="panel"><div class="panel-title">MY REVIEW<button type="button" class="palette-trigger" data-color-section="review" aria-label="Review card colours" title="Choose card colours"><span class="palette-sample" aria-hidden="true"></span>🎨</button></div><div class="panel-font-row"><label for="font-review">FONT</label><select id="font-review" class="section-font" data-section="review"></select></div><textarea id="bookReview" style="min-height:116px" placeholder="Your thoughts on the story, characters and ending…"></textarea><div class="panel-resize-row"><button type="button" class="panel-resize-handle" data-section="review" aria-label="Drag to resize review">↕</button></div></div>
       <div data-card-section="quotes" class="panel quote-panel"><div class="panel-title">FAVOURITE QUOTES<button type="button" class="palette-trigger" data-color-section="quotes" aria-label="Quote card colours" title="Choose card colours"><span class="palette-sample" aria-hidden="true"></span>🎨</button></div><div class="panel-font-row"><label for="font-quotes">FONT</label><select id="font-quotes" class="section-font" data-section="quotes"></select></div><textarea id="bookQuotes" placeholder="Your favourite lines…"></textarea><div class="panel-resize-row"><button type="button" class="panel-resize-handle" data-section="quotes" aria-label="Drag to resize quotes">↕</button></div></div>
@@ -813,7 +898,7 @@ body.dragging{overscroll-behavior:none}
 <script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id), DB_NAME='blue-reading-journal-v1';
-const COLLECTION_VERSION='1.8.4';
+const COLLECTION_VERSION='1.8.8';
 const booksPerPage=()=>window.matchMedia('(min-width:960px)').matches?12:9;
 const themes=['#253a57','#794858','#7b8979','#6d6789','#4d6c80','#846e5b'];
 const initialData=()=>({books:[
@@ -1042,7 +1127,7 @@ $('libraryGrid').addEventListener('keydown',ev=>{
  }
 });
 function showScreen(which){$('homeScreen').classList.toggle('active',which==='home');$('reviewScreen').classList.toggle('active',which==='review');window.scrollTo({top:0,behavior:'instant'})}
-function showReview(id,skipRoute=false){setMarkerMode(false);currentId=id;selectedStickerId=null;selectedFanartId=null;const b=book();if(!b)return;if(!skipRoute)setJournalRoute('review',id);for(const [id,key] of [['bookTitle','title'],['bookAuthor','author'],['bookGenre','genre'],['bookStatus','status'],['bookTags','tags'],['bookStarted','started'],['bookDate','date'],['bookPages','pages'],['bookSeries','series'],['bookVolume','volume'],['bookSummary','summary'],['bookReview','review'],['bookQuotes','quotes'],['bookTropes','tropes']])$(id).value=b[key]??'';renderStyle(b);renderPanelHeights(b);renderRichSections(b);renderCover(b);renderStars();renderFormats();renderFavoriteToggle();showScreen('review');renderFanarts();renderStickers();renderCardColors(b);renderLockState();renderReadingDuration(b)}
+function showReview(id,skipRoute=false){setMarkerMode(false);currentId=id;selectedStickerId=null;selectedFanartId=null;const b=book();if(!b)return;if(boxArrangeActive)setBoxArrangeActive(false);if(!skipRoute)setJournalRoute('review',id);for(const [id,key] of [['bookTitle','title'],['bookAuthor','author'],['bookGenre','genre'],['bookStatus','status'],['bookTags','tags'],['bookStarted','started'],['bookDate','date'],['bookPages','pages'],['bookSeries','series'],['bookVolume','volume'],['bookSummary','summary'],['bookReview','review'],['bookQuotes','quotes'],['bookTropes','tropes']])$(id).value=b[key]??'';renderStyle(b);renderBoxCustomization(b);renderPanelHeights(b);renderRichSections(b);renderCover(b);renderStars();renderFormats();renderFavoriteToggle();showScreen('review');renderFanarts();renderStickers();renderCardColors(b);renderLockState();renderReadingDuration(b)}
 function showHome(){returnToJournalLibrary()}
 function renderCover(b){const el=$('reviewCover');if(b.cover){el.className='main-cover';el.innerHTML=`<img alt="Book cover" src="${b.cover}" style="width:100%;height:100%;object-fit:cover"/>`}else{el.className='main-cover empty';el.innerHTML='<span>✧</span>YOUR COVER'}}
 const fontFamilies={simple:"system-ui,-apple-system,Arial,Tahoma,sans-serif",modern:"'Segoe UI',Roboto,Arial,sans-serif",clean:"Arial,Helvetica,sans-serif",rounded:"'Trebuchet MS',Arial,sans-serif",classic:"Georgia,'Times New Roman',serif",literary:"'Palatino Linotype',Palatino,Georgia,serif",elegant:"Baskerville,'Times New Roman',serif",vintage:"Garamond,Georgia,serif",typewriter:"'Courier New',monospace",mono:"ui-monospace,monospace",persian:"Tahoma,Arial,sans-serif",persianclassic:"'Noto Naskh Arabic','Times New Roman',serif",handwritten:"cursive",custom:"'JournalCustomFont',system-ui,sans-serif"};
@@ -1573,14 +1658,14 @@ function reflowStickersFromAnchors(){
 function renderLockState(){
  const b=book();if(!b)return;const locked=b.locked===true;
  if(locked&&markerMode)setMarkerMode(false);
- const body=$('reviewBody');body.classList.toggle('is-locked',locked);
+ const body=$('reviewBody');body.classList.toggle('is-locked',locked);renderBoxVisibility(b);if(locked&&boxArrangeActive)setBoxArrangeActive(false);
  const toggle=$('bookLockBtn');toggle.setAttribute('aria-pressed',locked?'true':'false');
  toggle.setAttribute('aria-label',locked?'Unlock book to edit':'Finish editing and lock book');
  toggle.title=locked?'Unlock to edit':'Lock review';
  toggle.classList.toggle('unlock-icon',locked);
  toggle.querySelector('.lock-shackle').setAttribute('d',locked?'M8 10.5V7a4 4 0 0 1 7.2-2.4':'M8 10.5V7a4 4 0 0 1 8 0v3.5');
  if(locked){selectedStickerId=null;selectedFanartId=null;renderStickers();renderFanarts();renderReadViews(b);refreshRichReadViews(b);selectedRichRange=null;$('highlightDock').hidden=true}
- else {renderSectionFonts(b);renderPanelHeights(b)}
+ else {renderSectionFonts(b);renderSectionFontSizes(b);renderPanelHeights(b)}
  $('starsEdit').querySelectorAll('.star-btn').forEach(btn=>btn.disabled=locked);
  renderFormats();renderFavoriteToggle();
  reflowStickersFromAnchors();
@@ -1599,7 +1684,24 @@ function setupSectionFonts(){
   el.add(new Option('↳ Main font','inherit'));
   for(const opt of options)el.add(new Option(opt.label,opt.value));
   el.add(new Option('My font','custom'));
-  el.addEventListener('change',()=>{const b=book();if(!b)return;b.sectionFonts={...b.sectionFonts,[el.dataset.section]:el.value};renderSectionFonts(b);scheduleSave()});
+  el.addEventListener('change',()=>{
+   const b=book();if(!b)return;
+   const section=el.dataset.section,id=SECTION_FIELDS[section],editor=richEditors[id];
+   // Capture the live content before rebuilding; only plain text and color highlights are persisted.
+   const parsed=editor?extractRichContent(editor):{text:String(b[section]||''),highlights:b.highlights?.[section]||[]};
+   b[section]=parsed.text;
+   b.highlights=b.highlights||{};
+   b.highlights[section]=parsed.highlights;
+   $(id).value=parsed.text;
+   b.sectionFonts={...b.sectionFonts,[section]:el.value};
+   renderSectionFonts(b);
+   if(editor){
+    editor.replaceChildren();appendHighlightedText(editor,parsed.text,parsed.highlights);
+    const view=document.querySelector(`[data-mirror="${id}"]`);
+    if(view){view.replaceChildren();appendHighlightedText(view,parsed.text,parsed.highlights)}
+   }
+   selectedRichRange=null;markerUI();scheduleSave();
+  });
  }
 }
 function renderSectionFonts(b){
@@ -1625,6 +1727,211 @@ function setupPanelResize(){
  // Native desktop textarea resize also persists its new height after the pointer is released.
  for(const [section,id] of Object.entries(SECTION_FIELDS))$(id).addEventListener('pointerup',()=>{const b=book();if(!b)return;const h=$(id).getBoundingClientRect().height;if(Math.abs(h-(b.boxHeights?.[section]||0))>3){b.boxHeights={...b.boxHeights,[section]:Math.round(h)};scheduleSave()}});
 }
+
+// ─── v1.8.8: configurable book sections ───────────────────────────
+const BOX_KEYS=['tropes','summary','review','quotes','fanart'];
+const BOX_DEFAULT_ORDER=[...BOX_KEYS];
+let boxArrangeActive=false;
+function validBoxOrder(b){
+ const chosen=Array.isArray(b?.panelOrder)?b.panelOrder.filter(v=>BOX_KEYS.includes(v)):[];
+ return [...new Set([...chosen,...BOX_DEFAULT_ORDER])];
+}
+function effectiveSpan(b,section){
+ const value=Number(b?.panelWidths?.[section]);
+ return [6,8,10,12].includes(value)?value:null;
+}
+function renderBoxCustomization(b){
+ if(!b)return;
+ const grid=$('journalPanelGrid');if(!grid)return;
+ const nodes=Object.fromEntries([...grid.querySelectorAll('[data-card-section]')].map(el=>[el.dataset.cardSection,el]));
+ for(const section of validBoxOrder(b))if(nodes[section])grid.appendChild(nodes[section]);
+ for(const section of BOX_KEYS){
+  const panel=nodes[section];if(!panel)continue;
+  const span=effectiveSpan(b,section);
+  if(span)panel.dataset.layoutSpan=String(span);else delete panel.dataset.layoutSpan;
+  const picker=panel.querySelector('.panel-width-select');
+  if(picker)picker.value=span?String(span):'auto';
+  const side=String(b?.panelSides?.[section]||'auto');
+  if(side==='left'||side==='right')panel.dataset.layoutSide=side;
+  else delete panel.dataset.layoutSide;
+  const sidePicker=panel.querySelector('.panel-side-select');
+  if(sidePicker)sidePicker.value=side==='left'||side==='right'?side:'auto';
+ }
+ renderBoxVisibility(b);
+ renderSectionFontSizes(b);
+}
+function renderBoxVisibility(b){
+ const grid=$('journalPanelGrid');if(!grid||!b)return;
+ for(const section of BOX_KEYS){
+  const panel=grid.querySelector(`[data-card-section="${section}"]`);if(!panel)continue;
+  const hide=b.hiddenPanels?.[section]===true;
+  panel.dataset.hideOnLock=String(hide);
+  const input=panel.querySelector('.card-hide-checkbox');
+  if(input)input.checked=hide;
+ }
+}
+function renderSectionFontSizes(b){
+ for(const [section,id] of Object.entries(SECTION_FIELDS)){
+  const val=Number(b?.sectionFontSizes?.[section]);
+  const size=Number.isFinite(val)&&val>=11&&val<=26?val:13;
+  const picker=document.querySelector(`.font-size-select[data-section="${section}"]`);
+  if(picker)picker.value=String(size);
+  const editor=richEditors[id],input=$(id),view=document.querySelector(`[data-mirror="${id}"]`);
+  if(editor)editor.style.fontSize=size+'px';
+  if(input)input.style.fontSize=size+'px';
+  if(view)view.style.fontSize=size+'px';
+ }
+}
+function setBoxArrangeActive(value){
+ const b=book();boxArrangeActive=!!value&&!b?.locked;
+ $('journalPanelGrid').classList.toggle('layout-editing',boxArrangeActive);
+ $('layoutActionBar').setAttribute('aria-pressed',String(boxArrangeActive));
+ $('boxArrangeToggle').textContent=boxArrangeActive?'✓ Done Arranging':'⠿ Arrange Boxes';
+ $('boxLayoutReset').hidden=!boxArrangeActive;
+ $('layoutActionHint').textContent=boxArrangeActive?'Drag ⠿ into LEFT / RIGHT, or choose SIDE below. For full-width cards, reduce WIDTH first.':'Change font sizes or tick Hide when locked. Turn on Arrange to move cards.';
+ const zones=$('layoutSideZones');if(zones)zones.classList.toggle('is-active',boxArrangeActive);
+}
+function setupBoxCustomization(){
+ // Move the existing rich editing elements, preserving all listeners, highlights, and stored text.
+ const first=document.querySelector('.details-row');
+ const second=document.querySelector('.desktop-review-columns');
+ const fan=document.querySelector('.fanart-board[data-card-section="fanart"]');
+ const grid=document.createElement('div');grid.className='journal-panels';grid.id='journalPanelGrid';
+ first.parentNode.insertBefore(grid,first);
+ const zones=document.createElement('div');zones.id='layoutSideZones';zones.className='layout-side-zones';zones.innerHTML='<div class="layout-side-zone" data-side="left">⇤ LEFT<small>Drop here, no swapping</small></div><div class="layout-side-zone" data-side="right">RIGHT ⇥<small>Drop here, no swapping</small></div>';
+ $('layoutActionBar').after(zones);
+ [...first.querySelectorAll(':scope > [data-card-section]'),...second.querySelectorAll(':scope > [data-card-section]'),fan].forEach(node=>grid.appendChild(node));
+ first.remove();second.remove();
+ for(const section of BOX_KEYS){
+  const panel=grid.querySelector(`[data-card-section="${section}"]`);
+  if(!panel)continue;
+  const header=panel.querySelector('.panel-title,.fanart-header');
+  const handle=document.createElement('button');handle.type='button';handle.className='panel-move-handle';handle.textContent='⠿';handle.dataset.section=section;handle.title='Drag to move this card';handle.setAttribute('aria-label',`Drag to move ${section} card`);
+  header.appendChild(handle);
+  const footer=document.createElement('div');footer.className='panel-width-tools';footer.innerHTML=`<label for="width-${section}">WIDTH</label><select id="width-${section}" class="panel-width-select" aria-label="${section} card width"><option value="auto">Default</option><option value="6">50%</option><option value="8">67%</option><option value="10">83%</option><option value="12">100%</option></select><label for="side-${section}">SIDE</label><select id="side-${section}" class="panel-side-select" aria-label="${section} card side"><option value="auto">Auto</option><option value="left">⇤ Left</option><option value="right">Right ⇥</option></select><button type="button" class="panel-width-grab" aria-label="Drag to resize width of ${section}">↔</button><button type="button" class="panel-move-step" data-step="-1" aria-label="Move ${section} card earlier">↑</button><button type="button" class="panel-move-step" data-step="1" aria-label="Move ${section} card later">↓</button><span class="width-help">Drag ↔ to resize</span>`;
+  panel.appendChild(footer);
+  const visibility=document.createElement('label');
+  visibility.className='card-visibility-option';
+  visibility.innerHTML=`<input type="checkbox" class="card-hide-checkbox" aria-label="Hide ${section} when book is locked"><span>◌ Hide when locked</span><span class="visibility-hint">(keeps your content)</span>`;
+  panel.appendChild(visibility);
+  visibility.querySelector('input').addEventListener('change',e=>{
+   const b=book();if(!b||b.locked)return;
+   b.hiddenPanels={...b.hiddenPanels,[section]:e.target.checked};
+   renderBoxVisibility(b);scheduleSave();
+  });
+  footer.querySelectorAll('.panel-move-step').forEach(btn=>btn.addEventListener('click',()=>{
+   const b=book();if(!b||b.locked)return;
+   const cards=[...grid.querySelectorAll(':scope >[data-card-section]')];
+   const from=cards.indexOf(panel),to=from+Number(btn.dataset.step);
+   if(to<0||to>=cards.length)return;
+   if(to>from)cards[to].after(panel);else cards[to].before(panel);
+   b.panelOrder=[...grid.querySelectorAll(':scope >[data-card-section]')].map(el=>el.dataset.cardSection);
+   scheduleSave();
+  }));
+  footer.querySelector('select').addEventListener('change',e=>{
+   const b=book();if(!b||b.locked)return;
+   b.panelWidths=b.panelWidths||{};const span=Number(e.target.value);
+   if([6,8,10,12].includes(span))b.panelWidths[section]=span;else delete b.panelWidths[section];
+   renderBoxCustomization(b);scheduleSave();
+  });
+  footer.querySelector('.panel-side-select').addEventListener('change',e=>{
+   const b=book();if(!b||b.locked)return;
+   b.panelSides={...b.panelSides};
+   if(e.target.value==='left'||e.target.value==='right')b.panelSides[section]=e.target.value;
+   else delete b.panelSides[section];
+   renderBoxCustomization(b);scheduleSave();
+  });
+  if(SECTION_FIELDS[section]){
+   const row=panel.querySelector('.panel-font-row');
+   const sizeLab=document.createElement('label');sizeLab.className='font-size-label';sizeLab.textContent='SIZE';sizeLab.htmlFor='font-size-'+section;
+   const select=document.createElement('select');select.id='font-size-'+section;select.className='font-size-select';select.dataset.section=section;select.setAttribute('aria-label',`Font size for ${section}`);
+   for(const n of [11,12,13,14,15,16,17,18,20,22,24,26])select.add(new Option(n+' px',String(n)));
+   row.append(sizeLab,select);
+   select.addEventListener('change',()=>{
+    const b=book();if(!b||b.locked)return;
+    b.sectionFontSizes={...b.sectionFontSizes,[section]:Number(select.value)};
+    renderSectionFontSizes(b);scheduleSave();
+   });
+  }
+ }
+ $('boxArrangeToggle').addEventListener('click',()=>setBoxArrangeActive(!boxArrangeActive));
+ $('boxLayoutReset').addEventListener('click',()=>{const b=book();if(!b)return;delete b.panelWidths;delete b.panelOrder;delete b.panelSides;renderBoxCustomization(b);scheduleSave()});
+ setupBoxGestures(grid);
+}
+function setupBoxGestures(grid){
+ let drag=null;
+ const zones=()=>$('layoutSideZones');
+ function clearTarget(){
+  grid.querySelectorAll('.layout-drop-target').forEach(el=>el.classList.remove('layout-drop-target'));
+  zones()?.querySelectorAll('.is-target').forEach(el=>el.classList.remove('is-target'));
+ }
+ function pickDrop(e,d){
+  clearTarget();d.lastTarget=null;d.dropSide=null;
+  const z=zones()?.getBoundingClientRect();
+  if(z&&e.clientY>=z.top&&e.clientY<=z.bottom&&e.clientX>=z.left&&e.clientX<=z.right){
+   d.dropSide=(e.clientX<z.left+z.width/2)?'left':'right';
+  }else{
+   const area=grid.getBoundingClientRect();
+   if(e.clientY>=area.top&&e.clientY<=area.bottom&&e.clientX>=area.left&&e.clientX<=area.right){
+    const hovered=document.elementFromPoint(e.clientX,e.clientY)?.closest('.journal-panels >[data-card-section]');
+    if(hovered&&hovered!==d.panel&&grid.contains(hovered))d.lastTarget=hovered;
+    else d.dropSide=e.clientX<area.left+area.width/2?'left':'right';
+   }
+  }
+  if(d.dropSide){zones()?.querySelector(`.layout-side-zone[data-side="${d.dropSide}"]`)?.classList.add('is-target')}
+  else if(d.lastTarget)d.lastTarget.classList.add('layout-drop-target');
+ }
+ grid.addEventListener('pointerdown',e=>{
+  if(!boxArrangeActive||!e.isPrimary||(e.pointerType==='mouse'&&e.button!==0))return;
+  const move=e.target.closest('.panel-move-handle'),width=e.target.closest('.panel-width-grab');
+  if(!move&&!width)return;
+  const panel=e.target.closest('[data-card-section]');if(!panel)return;
+  e.preventDefault();
+  drag={id:e.pointerId,kind:move?'move':'width',panel,section:panel.dataset.cardSection,startX:e.clientX,startY:e.clientY,startWidth:panel.getBoundingClientRect().width,lastTarget:null,dropSide:null,handle:move||width};
+  try{drag.handle.setPointerCapture(e.pointerId)}catch{}
+  if(move)panel.classList.add('layout-dragging');
+ });
+ grid.addEventListener('pointermove',e=>{
+  if(!drag||e.pointerId!==drag.id)return;
+  e.preventDefault();
+  if(drag.kind==='move')pickDrop(e,drag);
+  else{
+   const bounds=grid.getBoundingClientRect();
+   const slot=bounds.width/12;
+   const potential=drag.startWidth+(e.clientX-drag.startX);
+   const span=[6,8,10,12].reduce((best,v)=>Math.abs(v*slot-potential)<Math.abs(best*slot-potential)?v:best,6);
+   drag.panel.dataset.layoutSpan=String(span);
+   const picker=drag.panel.querySelector('.panel-width-select');if(picker)picker.value=String(span);
+  }
+ });
+ function finish(e){
+  if(!drag||e.pointerId!==drag.id)return;
+  const d=drag;drag=null;
+  d.panel.classList.remove('layout-dragging');
+  const b=book();if(!b){clearTarget();return}
+  if(d.kind==='move'){
+   // Recompute once on pointerup; mobile pointerend can occur after the last move event.
+   pickDrop(e,d);
+   if(d.dropSide){
+    b.panelSides={...b.panelSides,[d.section]:d.dropSide};
+    renderBoxCustomization(b);scheduleSave();
+   }else if(d.lastTarget&&d.lastTarget!==d.panel){
+    const target=d.lastTarget,order=[...grid.querySelectorAll(':scope >[data-card-section]')];
+    if(order.indexOf(d.panel)<order.indexOf(target))target.after(d.panel);else target.before(d.panel);
+    b.panelOrder=[...grid.querySelectorAll(':scope >[data-card-section]')].map(el=>el.dataset.cardSection);
+    scheduleSave();
+   }
+  }else{
+   b.panelWidths={...b.panelWidths,[d.section]:Number(d.panel.dataset.layoutSpan)||12};scheduleSave();
+  }
+  clearTarget();
+ }
+ grid.addEventListener('pointerup',finish);
+ grid.addEventListener('pointercancel',e=>{if(!drag||e.pointerId!==drag.id)return;drag.panel.classList.remove('layout-dragging');clearTarget();drag=null;renderBoxCustomization(book())});
+ grid.addEventListener('lostpointercapture',e=>{if(!drag||e.pointerId!==drag.id)return;const d=drag;drag=null;d.panel.classList.remove('layout-dragging');clearTarget()});
+}
+// ─── end configurable book sections ────────────────────────────────
+
 function renderStars(){const b=book(),el=$('starsEdit');if(!b)return;el.innerHTML=[1,2,3,4,5].map(i=>`<button class="star-btn ${i<=b.rating?'chosen':''}" aria-label="${i} star" data-rating="${i}" type="button">${i<=b.rating?'★':'☆'}</button>`).join('')+`<span class="rating-caption">${b.rating}/5</span>`;el.querySelectorAll('button').forEach(btn=>btn.onclick=()=>{if(b.locked)return;b.rating=Number(btn.dataset.rating);scheduleSave();renderStars()})}
 function renderFormats(){
  const b=book();if(!b)return;
@@ -2157,7 +2464,7 @@ $('rouletteGenre').addEventListener('change',()=>{if(rouletteSpinning)return;rou
 $('rouletteSpinBtn').addEventListener('click',spinRoulette);
 $('rouletteCenterBtn').addEventListener('click',spinRoulette);
 
-async function init(){setupReadViews();setupRichEditors();setupSectionFonts();setupPanelResize();db=await openDB();const stored=await dbRead();if(stored&&Array.isArray(stored.books))data=stored;let migrated=false;for(const b of data.books){if(!Object.hasOwn(READING_STATUSES,b.status)){b.status=normalizedReadingStatus(b);migrated=true}if(typeof b.tags!=='string'){b.tags=String(b.tags||'');migrated=true}}if(!data.seriesRatings||typeof data.seriesRatings!=='object'||Array.isArray(data.seriesRatings)){data.seriesRatings={};migrated=true}if(!data.seriesTotals||typeof data.seriesTotals!=='object'||Array.isArray(data.seriesTotals)){data.seriesTotals={};migrated=true}if(migrated)await dbWrite(data);await loadCustomFont();setupVibeChoices();renderLibrary();changeTab('library',true);restoreJournalRoute(window.history.state?.[JOURNAL_ROUTE_KEY])}init();
+async function init(){setupReadViews();setupRichEditors();setupSectionFonts();setupPanelResize();setupBoxCustomization();db=await openDB();const stored=await dbRead();if(stored&&Array.isArray(stored.books))data=stored;let migrated=false;for(const b of data.books){if(!Object.hasOwn(READING_STATUSES,b.status)){b.status=normalizedReadingStatus(b);migrated=true}if(typeof b.tags!=='string'){b.tags=String(b.tags||'');migrated=true}}if(!data.seriesRatings||typeof data.seriesRatings!=='object'||Array.isArray(data.seriesRatings)){data.seriesRatings={};migrated=true}if(!data.seriesTotals||typeof data.seriesTotals!=='object'||Array.isArray(data.seriesTotals)){data.seriesTotals={};migrated=true}if(migrated)await dbWrite(data);await loadCustomFont();setupVibeChoices();renderLibrary();changeTab('library',true);restoreJournalRoute(window.history.state?.[JOURNAL_ROUTE_KEY])}init();
 })();
 </script>
 </body>
