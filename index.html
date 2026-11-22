@@ -623,6 +623,9 @@ body.dragging{overscroll-behavior:none}
 .roulette-scope-note b{color:#e5c992}
 .roulette-content{margin-top:14px}
 @media(max-width:700px){.roulette-scope-panel{margin:14px 0 0;padding:13px}.roulette-scope-header p{font-size:13px}.roulette-scope-options{gap:8px}.roulette-scope-option{padding:10px;gap:5px;min-height:64px}.roulette-scope-option .scope-glyph{font-size:21px;width:21px}.roulette-scope-option strong{font-size:12px}.roulette-scope-option small{font-size:9px}.roulette-scope-header .roulette-candidate-count strong{font-size:25px}}
+/* Multi-genre field, matching free-text Tags input. */
+#bookGenre{direction:auto;min-width:0;width:100%}
+.review-body.theme-dark #bookGenre{color:var(--page-text,#f5eee7)}
 </style>
 </head>
 <body>
@@ -685,8 +688,8 @@ body.dragging{overscroll-behavior:none}
         <div class="book-meta">
           <label class="form-label" for="bookTitle">BOOK TITLE</label><input dir="auto" class="field" id="bookTitle" placeholder="Book title" />
           <label class="form-label" for="bookAuthor" data-meta-label="bookAuthor">AUTHOR</label><input dir="auto" class="field" id="bookAuthor" placeholder="Author" />
-          <label class="form-label" for="bookGenre" data-meta-label="genreDate">GENRE</label>
-          <div class="meta-select genre-only" id="genreDateWrap"><input dir="auto" class="field" id="bookGenre" placeholder="Genre" /></div>
+          <label class="form-label" for="bookGenre" data-meta-label="genreDate">GENRES</label>
+          <div class="meta-select genre-only" id="genreDateWrap"><input dir="auto" class="field" id="bookGenre" placeholder="e.g. Fantasy، Romance، Mystery" aria-label="Genres separated by commas" /></div>
           <label class="form-label" for="bookStatus">READING STATUS</label>
           <select class="field" id="bookStatus" aria-label="Reading status"><option value="tbr">TBR · To Be Read</option><option value="reading">Currently Reading</option><option value="completed">Completed</option><option value="onhold">On Hold</option><option value="dnf">DNF · Did Not Finish</option></select>
           <label class="form-label" for="bookTags" data-meta-label="bookTags">TAGS</label><input dir="auto" class="field" id="bookTags" placeholder="e.g. Romantasy, Slow burn" />
@@ -752,7 +755,7 @@ body.dragging{overscroll-behavior:none}
 <p class="modal-note">Your books are stored locally in this browser. Clearing site data may erase them. Export backups regularly.</p>
 <div class="bottom-buttons"><button class="primary" id="exportBtn">↓ Export backup</button><button class="secondary" id="importBtn">↑ Restore</button></div><input type="file" id="importFile" accept="application/json,.json" hidden />
 <p class="modal-note">Your backup includes reading statuses, tags, your book order, reviews, covers, favorites, series, highlights and stickers. Save it somewhere safe.</p>
-<div class="panel" style="margin-top:20px"><div class="panel-title">ABOUT YOUR JOURNAL</div><div class="modal-note">Version 1.8.2 · TBR Roulette, genre choice, no-repeat draws, series progress and personal series ratings, draggable book order, reading statuses and filters, adaptive mobile and desktop layouts, highlighting, fan art and stickers. Data stays on this device until you export it.</div></div>
+<div class="panel" style="margin-top:20px"><div class="panel-title">ABOUT YOUR JOURNAL</div><div class="modal-note">Version 1.8.4 · Multiple genres, TBR Roulette, genre choice, no-repeat draws, series progress and personal series ratings, draggable book order, reading statuses and filters, adaptive mobile and desktop layouts, highlighting, fan art and stickers. Data stays on this device until you export it.</div></div>
 </div></div>
 <div class="overlay" id="panelColorsModal" role="dialog" aria-modal="true" aria-label="Choose card colours"><div class="modal"><div class="modal-header"><button class="close-btn" type="button" data-close="panelColorsModal">×</button><div><div class="eyebrow">COLOUR YOUR STORY</div><h3>Card Colours</h3></div></div><p class="modal-note" id="colorTargetLabel">Colours for this card only ✦</p><div class="color-control-row"><div><div class="color-control-label">🌷 Pastel background</div><div class="color-swatches" id="backgroundSwatches"></div></div><div><div class="color-control-label">🌑 Deep border</div><div class="color-swatches" id="borderSwatches"></div></div></div><div class="color-preview" id="boxColorPreview">Card colour preview ✦</div><div class="color-actions"><button type="button" class="secondary" id="colorResetBtn">Reset to default</button><button type="button" class="primary" id="colorDoneBtn">Done ✓</button></div></div></div>
 <div class="overlay" id="cropModal" role="dialog" aria-modal="true" aria-label="Crop book cover"><div class="modal crop-modal"><div class="modal-header"><button class="close-btn" type="button" id="cropCloseBtn" aria-label="Cancel">×</button><div><div class="eyebrow">MAKE IT FIT</div><h3>Crop your cover</h3></div></div><p class="crop-tip" id="cropTip">For book covers ✂ Move the image with your S Pen or finger, and zoom below.</p><div class="crop-aspect-options" id="cropAspectOptions" hidden><button type="button" data-ratio="1" class="active">Square</button><button type="button" data-ratio="0.75">Portrait</button><button type="button" data-ratio="1.333333">Landscape</button></div><div class="crop-workarea"><div class="crop-stage" id="cropStage" aria-label="Drag photo within the crop frame"><img id="cropImage" draggable="false" alt="Image selected for crop"/><div class="crop-guide" aria-hidden="true"></div></div></div><label class="crop-zoom-row" for="cropZoom">Zoom <input id="cropZoom" type="range" min="1" max="3.5" step="0.01" value="1"/><span id="cropZoomLabel">1×</span></label><div class="crop-actions"><button class="secondary" type="button" id="cropCancelBtn">Cancel</button><button class="secondary" type="button" id="cropResetBtn">Reset</button><button class="primary" type="button" id="cropSaveBtn">Apply crop ✓</button></div></div></div>
@@ -810,7 +813,7 @@ body.dragging{overscroll-behavior:none}
 <script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id), DB_NAME='blue-reading-journal-v1';
-const COLLECTION_VERSION='1.8.3';
+const COLLECTION_VERSION='1.8.4';
 const booksPerPage=()=>window.matchMedia('(min-width:960px)').matches?12:9;
 const themes=['#253a57','#794858','#7b8979','#6d6789','#4d6c80','#846e5b'];
 const initialData=()=>({books:[
@@ -875,13 +878,21 @@ const READING_STATUSES={tbr:{label:'TBR',title:'To Be Read',mark:'◌'},reading:
 // Earlier versions only tracked finished books. Keep their existing meaning during migration.
 function normalizedReadingStatus(b){return Object.hasOwn(READING_STATUSES,b?.status)?b.status:(b?.started&&!b?.date?'reading':'completed')}
 function bookTags(b){return String(b?.tags||'').split(/[,،;؛\n]+/).map(v=>v.trim()).filter(Boolean)}
+// Genres are typed like Tags, separated by Persian or English commas.
+// Keep genre as a string in stored books for backwards-compatible backups.
+function bookGenres(b){
+ const raw=Array.isArray(b?.genre)?b.genre.join(', '):String(b?.genre||'');
+ const seen=new Set();return raw.split(/[,،;؛\n]+/).map(v=>v.trim()).filter(v=>{
+  if(!v)return false;const key=v.toLocaleLowerCase();if(seen.has(key))return false;seen.add(key);return true;
+ });
+}
 function activeLibraryFilters(){return selectedLibraryStatus!=='all'||!!$('librarySearch').value.trim()||$('libraryRatingFilter').value!=='all'||$('libraryGenreFilter').value!=='all'||$('libraryAuthorFilter').value!=='all'||$('libraryTagFilter').value!=='all'||$('librarySort').value!=='added'||$('libraryAudioFilter').checked||$('libraryPhysicalFilter').checked}
 function libraryResults(){
  let books=[...data.books];const term=$('librarySearch').value.trim().toLocaleLowerCase(),rating=$('libraryRatingFilter').value,genre=$('libraryGenreFilter').value,author=$('libraryAuthorFilter').value,tag=$('libraryTagFilter').value;
  if(selectedLibraryStatus!=='all')books=books.filter(b=>normalizedReadingStatus(b)===selectedLibraryStatus);
  if(term)books=books.filter(b=>[b.title,b.author,b.genre,b.series,b.tropes,b.tags].some(t=>String(t||'').toLocaleLowerCase().includes(term)));
  if(rating==='unrated')books=books.filter(b=>!Number(b.rating));else if(rating!=='all')books=books.filter(b=>Number(b.rating)>=Number(rating));
- if(genre!=='all')books=books.filter(b=>String(b.genre||'').trim().toLocaleLowerCase()===genre);
+ if(genre!=='all')books=books.filter(b=>bookGenres(b).some(g=>g.toLocaleLowerCase()===genre));
  if(author!=='all')books=books.filter(b=>String(b.author||'').trim().toLocaleLowerCase()===author);
  if(tag!=='all')books=books.filter(b=>bookTags(b).some(t=>t.toLocaleLowerCase()===tag));
  if($('libraryAudioFilter').checked)books=books.filter(b=>!!b.formats?.audio);
@@ -892,7 +903,7 @@ function libraryResults(){
 function fillLibraryFilterSelect(id,values,allText){const sel=$(id),old=sel.value;sel.replaceChildren(new Option(allText,'all'));for(const v of values){sel.add(new Option(v,v.toLocaleLowerCase()))}sel.value=values.some(v=>v.toLocaleLowerCase()===old)?old:'all'}
 function refreshGenreFilters(){
  const sorted=values=>[...new Set(values.map(v=>String(v||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
- fillLibraryFilterSelect('libraryGenreFilter',sorted(data.books.map(b=>b.genre)),'All genres');
+ fillLibraryFilterSelect('libraryGenreFilter',sorted(data.books.flatMap(bookGenres)),'All genres');
  fillLibraryFilterSelect('libraryAuthorFilter',sorted(data.books.map(b=>b.author)),'All authors');
  fillLibraryFilterSelect('libraryTagFilter',sorted(data.books.flatMap(bookTags)),'All tags');
 }
@@ -1508,7 +1519,7 @@ function renderReadViews(b){
  for(const id of ['bookTitle','bookAuthor','bookGenre','bookStatus','bookTags','bookStarted','bookDate','bookPages','bookSeries','bookVolume',...Object.values(SECTION_FIELDS)]){
   const view=document.querySelector(`[data-mirror="${id}"]`);if(!view)continue;
   const field=$(id);let value=field.value.trim();if((id==='bookDate'||id==='bookStarted')&&value)value=value.replace(/-/g,' / ');
-  view.textContent=id==='bookStatus'?(READING_STATUSES[value]?.title||'Completed'):(value||(id==='bookTitle'?'Untitled':''));
+  view.textContent=id==='bookStatus'?(READING_STATUSES[value]?.title||'Completed'):(id==='bookGenre'?bookGenres({genre:value}).join(' · '):(value||(id==='bookTitle'?'Untitled':'')));
   view.classList.toggle('meta-empty',!value&&id!=='bookTitle');
   view.classList.toggle('empty-view',!value);
   if(SECTION_FIELDS && Object.values(SECTION_FIELDS).includes(id)){
@@ -1863,7 +1874,7 @@ function renderStats(){const v=$('collectionView'),all=data.books,read=all.filte
  const years=[...new Set(completed.map(b=>b.date.slice(0,4)))].sort().reverse();const stored=v.dataset.statsYear||'all';const yr=stored==='all'||years.includes(stored)?stored:'all';const viewed=completed.filter(b=>yr==='all'||b.date.startsWith(yr));
  const counts=Array(12).fill(0);viewed.forEach(b=>counts[Number(b.date.slice(5,7))-1]++);const max=Math.max(1,...counts);
  const durations=read.map(readingDurationDays).filter(days=>days!==null&&days>0);const avgDays=durations.length?(durations.reduce((a,b)=>a+b,0)/durations.length).toFixed(1):'—';
- const genres=new Map();for(const b of read){const g=String(b.genre||'').trim();if(g)genres.set(g,(genres.get(g)||0)+1)}const genreBars=[...genres].sort((a,b)=>b[1]-a[1]).slice(0,7);
+ const genres=new Map();for(const b of read){for(const g of bookGenres(b)){genres.set(g,(genres.get(g)||0)+1)}}const genreBars=[...genres].sort((a,b)=>b[1]-a[1]).slice(0,7);
  v.innerHTML=`<h2 class="collection-heading">Reading Statistics</h2><p class="collection-note">Your personal reading story, counted from what you have entered. ✦</p><div class="stat-summary"><div class="stat-tile"><strong>${all.length}</strong><span>BOOKS LOGGED</span></div><div class="stat-tile"><strong>${read.length}</strong><span>BOOKS COMPLETED</span></div><div class="stat-tile"><strong>${all.filter(b=>normalizedReadingStatus(b)==='tbr').length}</strong><span>TBR</span></div><div class="stat-tile"><strong>${pg.toLocaleString('en-US')}</strong><span>PAGES RECORDED</span></div><div class="stat-tile"><strong>${avg}</strong><span>AVERAGE RATING</span></div><div class="stat-tile"><strong>${all.filter(b=>b.favorite).length}</strong><span>FAVORITES</span></div><div class="stat-tile"><strong>${avgDays}</strong><span>AVG. READING DAYS</span></div></div><section class="collection-card"><div class="heading-row"><h3>Books finished by month</h3><select id="statsYear" class="vibe-select" style="max-width:118px" aria-label="Statistics year"><option value="all">All years</option>${years.map(y=>`<option value="${y}" ${yr===y?'selected':''}>${y}</option>`).join('')}</select></div>${completed.length?`<p class="collection-note">Only completed books with a finish date count toward monthly totals (${viewed.length} in this view).</p>${counts.map((x,i)=>`<div class="stat-barline"><span>${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][i]}</span><div class="stat-bar"><div class="stat-fill" style="width:${x/max*100}%"></div></div><b>${x}</b></div>`).join('')}`:emptyCollection('Mark a book Completed and add a finish date to see your monthly reads.')}</section><section class="collection-card" style="margin-top:12px"><h3>Most-read genres</h3>${genreBars.length?genreBars.map(([g,count])=>`<div class="stat-barline"><span title="${escapeHTML(g)}">${escapeHTML(g)}</span><div class="stat-bar"><div class="stat-fill" style="width:${count/genreBars[0][1]*100}%"></div></div><b>${count}</b></div>`).join(''):emptyCollection('Add a genre to see your favorites take shape.')}</section>`;
  v.querySelector('#statsYear')?.addEventListener('change',e=>{v.dataset.statsYear=e.target.value;renderStats()})
 }
@@ -1998,7 +2009,7 @@ const ROULETTE_COLORS=['#6c5770','#496b70','#a18069','#556e91','#827459','#8e596
 function roulettePool(){
  const genre=$('rouletteGenre').value;
  if(rouletteScope==='genre'&&!genre)return [];
- return data.books.filter(b=>normalizedReadingStatus(b)==='tbr'&&(rouletteScope==='all'||String(b.genre||'').split(/[,;]+/).map(x=>x.trim()).includes(genre)));
+ return data.books.filter(b=>normalizedReadingStatus(b)==='tbr'&&(rouletteScope==='all'||bookGenres(b).some(g=>g.toLocaleLowerCase()===genre.toLocaleLowerCase())));
 }
 function resetRouletteDraw(){rouletteRemainingIds=[];roulettePoolSignature='';rouletteLastId=null}
 function chooseRoulettePick(pool){
@@ -2020,7 +2031,7 @@ function chooseRouletteIndex(max){
 }
 function setupRouletteGenres(){
  const select=$('rouletteGenre'),prev=select.value;
- const names=[...new Set(data.books.filter(b=>normalizedReadingStatus(b)==='tbr').flatMap(b=>String(b.genre||'').split(/[,;]+/).map(x=>x.trim()).filter(Boolean)))].sort((a,b)=>a.localeCompare(b));
+ const names=[...new Set(data.books.filter(b=>normalizedReadingStatus(b)==='tbr').flatMap(bookGenres))].sort((a,b)=>a.localeCompare(b));
  select.replaceChildren(new Option('Select a genre…',''));for(const name of names)select.add(new Option(name,name));
  select.value=names.includes(prev)?prev:'';
  $('rouletteScopeGenre').disabled=names.length===0;
