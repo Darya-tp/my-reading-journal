@@ -674,6 +674,16 @@ body.dragging{overscroll-behavior:none}
 /* Saving messages can wrap the mobile toolbar and move the page too. */
 @media(max-width:679px){.review-body .backbar{min-height:62px}}
 
+
+/* v1.9.4 — Favourite Scenes. Multiple dialogue lines stay in one scene; one blank line divides scenes. */
+.journal-panels > [data-card-section="scenes"]{grid-column:span 12}
+.favourite-scenes-panel .scene-edit-tip{font:italic 10px/1.55 Georgia,serif;color:#73889a;margin:4px 0 10px;direction:ltr}
+.review-body.is-locked .favourite-scenes-panel .scene-edit-tip{display:none!important}
+.favourite-scenes-panel .view-text.scene-read-view{white-space:normal!important;padding:0 1px}
+.scene-entry{white-space:pre-wrap;overflow-wrap:anywhere;unicode-bidi:plaintext;line-height:1.9;direction:auto;text-align:start}
+.scene-divider{height:24px;display:flex;align-items:center;justify-content:center;gap:8px;color:#a58b69;opacity:.75;direction:ltr}
+.scene-divider:before,.scene-divider:after{content:'';width:36px;height:1px;background:currentColor;opacity:.55}
+.review-body.theme-dark .scene-divider{color:#dec6a0}
 </style>
 </head>
 <body>
@@ -784,6 +794,15 @@ body.dragging{overscroll-behavior:none}
       <div class="desktop-review-columns">
       <div data-card-section="review" class="panel"><div class="panel-title">MY REVIEW<button type="button" class="palette-trigger" data-color-section="review" aria-label="Review card colours" title="Choose card colours"><span class="palette-sample" aria-hidden="true"></span>🎨</button></div><div class="panel-font-row"><label for="font-review">FONT</label><select id="font-review" class="section-font" data-section="review"></select></div><textarea id="bookReview" style="min-height:116px" placeholder="Your thoughts on the story, characters and ending…"></textarea><div class="panel-resize-row"><button type="button" class="panel-resize-handle" data-section="review" aria-label="Drag to resize review">↕</button></div></div>
       <div data-card-section="quotes" class="panel quote-panel"><div class="panel-title">FAVOURITE QUOTES<button type="button" class="palette-trigger" data-color-section="quotes" aria-label="Quote card colours" title="Choose card colours"><span class="palette-sample" aria-hidden="true"></span>🎨</button></div><div class="panel-font-row"><label for="font-quotes">FONT</label><select id="font-quotes" class="section-font" data-section="quotes"></select></div><textarea id="bookQuotes" placeholder="Your favourite lines…"></textarea><div class="panel-resize-row"><button type="button" class="panel-resize-handle" data-section="quotes" aria-label="Drag to resize quotes">↕</button></div></div>
+      <div data-card-section="scenes" class="panel favourite-scenes-panel">
+        <div class="panel-title">FAVOURITE SCENES<button type="button" class="palette-trigger" data-color-section="scenes" aria-label="Favourite Scenes card colours" title="Choose card colours"><span class="palette-sample" aria-hidden="true"></span>🎨</button></div>
+        <div class="panel-font-row"><label for="font-scenes">FONT</label><select id="font-scenes" class="section-font" data-section="scenes"></select></div>
+        <textarea id="bookScenes" placeholder="Write the dialogue from one scene line by line…
+
+Leave one blank line to begin another scene."></textarea>
+        <p class="scene-edit-tip">✦ One Enter continues a scene. Leave one blank line to start the next.</p>
+        <div class="panel-resize-row"><button type="button" class="panel-resize-handle" data-section="scenes" aria-label="Drag to resize favourite scenes">↕</button></div>
+      </div>
       </div>
       <section class="fanart-board" data-card-section="fanart" aria-label="Book fan art board"><div class="fanart-header"><span>FAN ART & MOODBOARD</span><button type="button" class="palette-trigger" data-color-section="fanart" aria-label="Fan art card colours"><span class="palette-sample" aria-hidden="true"></span>🎨</button><span class="fanart-subtitle">Images from this book ✦</span></div>
         <div class="fanart-stage" id="fanartStage" aria-label="Fan art collage"><div class="fanart-empty" id="fanartEmpty"><span class="fanart-empty-icon">❖</span><span>Collect fan art from this story here ✦</span></div></div>
@@ -863,7 +882,7 @@ body.dragging{overscroll-behavior:none}
 <script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id), DB_NAME='blue-reading-journal-v1';
-const COLLECTION_VERSION='1.9.3';
+const COLLECTION_VERSION='1.9.4';
 const booksPerPage=()=>window.matchMedia('(min-width:960px)').matches?12:9;
 const themes=['#253a57','#794858','#7b8979','#6d6789','#4d6c80','#846e5b'];
 const initialData=()=>({books:[],seriesRatings:{},seriesTotals:{}});
@@ -1089,7 +1108,7 @@ $('libraryGrid').addEventListener('keydown',ev=>{
  }
 });
 function showScreen(which){$('homeScreen').classList.toggle('active',which==='home');$('reviewScreen').classList.toggle('active',which==='review');window.scrollTo({top:0,behavior:'instant'})}
-function showReview(id,skipRoute=false){setMarkerMode(false);currentId=id;selectedStickerId=null;selectedFanartId=null;const b=book();if(!b)return;if(boxArrangeActive)setBoxArrangeActive(false);if(!skipRoute)setJournalRoute('review',id);for(const [id,key] of [['bookTitle','title'],['bookAuthor','author'],['bookGenre','genre'],['bookStatus','status'],['bookTags','tags'],['bookStarted','started'],['bookDate','date'],['bookPages','pages'],['bookSeries','series'],['bookVolume','volume'],['bookSummary','summary'],['bookReview','review'],['bookQuotes','quotes'],['bookTropes','tropes']])$(id).value=b[key]??'';renderStyle(b);renderBoxCustomization(b);renderPanelHeights(b);renderRichSections(b);renderCover(b);renderStars();renderFormats();renderFavoriteToggle();showScreen('review');renderFanarts();renderStickers();renderCardColors(b);renderLockState();renderReadingDuration(b)}
+function showReview(id,skipRoute=false){setMarkerMode(false);currentId=id;selectedStickerId=null;selectedFanartId=null;const b=book();if(!b)return;if(boxArrangeActive)setBoxArrangeActive(false);if(!skipRoute)setJournalRoute('review',id);for(const [id,key] of [['bookTitle','title'],['bookAuthor','author'],['bookGenre','genre'],['bookStatus','status'],['bookTags','tags'],['bookStarted','started'],['bookDate','date'],['bookPages','pages'],['bookSeries','series'],['bookVolume','volume'],['bookSummary','summary'],['bookReview','review'],['bookQuotes','quotes'],['bookTropes','tropes'],['bookScenes','scenes']])$(id).value=b[key]??'';renderStyle(b);renderBoxCustomization(b);renderPanelHeights(b);renderRichSections(b);renderCover(b);renderStars();renderFormats();renderFavoriteToggle();showScreen('review');renderFanarts();renderStickers();renderCardColors(b);renderLockState();renderReadingDuration(b)}
 function showHome(){returnToJournalLibrary()}
 function renderCover(b){const el=$('reviewCover');if(b.cover){el.className='main-cover';el.innerHTML=`<img alt="Book cover" src="${b.cover}" style="width:100%;height:100%;object-fit:cover"/>`}else{el.className='main-cover empty';el.innerHTML='<span>✧</span>YOUR COVER'}}
 const fontFamilies={simple:"system-ui,-apple-system,Arial,Tahoma,sans-serif",modern:"'Segoe UI',Roboto,Arial,sans-serif",clean:"Arial,Helvetica,sans-serif",rounded:"'Trebuchet MS',Arial,sans-serif",classic:"Georgia,'Times New Roman',serif",literary:"'Palatino Linotype',Palatino,Georgia,serif",elegant:"Baskerville,'Times New Roman',serif",vintage:"Garamond,Georgia,serif",typewriter:"'Courier New',monospace",mono:"ui-monospace,monospace",persian:"Tahoma,Arial,sans-serif",persianclassic:"'Noto Naskh Arabic','Times New Roman',serif",handwritten:"cursive",custom:"'JournalCustomFont',system-ui,sans-serif"};
@@ -1230,7 +1249,7 @@ const HIGHLIGHT_COLORS=[
  {name:'Lilac',code:'#DCD0F6'},{name:'Peach',code:'#FFD8BA'},
  {name:'Sea glass',code:'#BDE8DF'},{name:'Mist grey',code:'#D6DFEA'}
 ];
-const RICH_KEYS={bookTropes:'tropes',bookSummary:'summary',bookReview:'review',bookQuotes:'quotes'};
+const RICH_KEYS={bookTropes:'tropes',bookSummary:'summary',bookReview:'review',bookQuotes:'quotes',bookScenes:'scenes'};
 const richEditors={};
 let selectedRichRange=null;
 let markerMode=false,markerBrush='#FBE5A9',markerDrag=null;
@@ -1408,9 +1427,34 @@ function renderRichSections(b){
  }
  selectedRichRange=null;markerUI();
 }
+function splitFavouriteScenes(content){
+ const text=String(content||'').replace(/\r\n?/g,'\n'),segments=[];
+ const breaks=/\n[ \t]*\n(?:[ \t]*\n)*/g;
+ let from=0,match;
+ while((match=breaks.exec(text))){
+  const slice=text.slice(from,match.index);
+  if(slice.trim())segments.push({text:slice,start:from});
+  from=breaks.lastIndex;
+ }
+ const tail=text.slice(from);if(tail.trim())segments.push({text:tail,start:from});
+ return segments;
+}
+function showFavouriteScenes(view,b){
+ const text=String(b.scenes||''),groups=splitFavouriteScenes(text),ranges=b.highlights?.scenes||[];
+ view.replaceChildren();view.classList.add('scene-read-view');
+ for(let i=0;i<groups.length;i++){
+  const group=groups[i];
+  if(i){const divider=document.createElement('div');divider.className='scene-divider';divider.setAttribute('aria-hidden','true');divider.textContent='✦';view.appendChild(divider)}
+  const item=document.createElement('div');item.className='scene-entry';
+  const fragmentRanges=ranges.filter(r=>r.end>group.start&&r.start<group.start+group.text.length)
+    .map(r=>({start:Math.max(0,r.start-group.start),end:Math.min(group.text.length,r.end-group.start),color:r.color}));
+  appendHighlightedText(item,group.text,fragmentRanges);view.appendChild(item);
+ }
+}
 function refreshRichReadViews(b){
  for(const [section,id] of Object.entries(SECTION_FIELDS)){
   const view=document.querySelector(`[data-mirror="${id}"]`);if(!view)continue;
+  if(section==='scenes'){showFavouriteScenes(view,b);continue}
   view.replaceChildren();appendHighlightedText(view,String(b[section]||''),b.highlights?.[section]||[]);
  }
 }
@@ -1503,10 +1547,10 @@ function setupRichEditors(){
  document.addEventListener('pointerdown',e=>{if(!e.target.closest('#highlightDock')&&!e.target.closest('.rich-editor')&&!e.target.closest('#markerModeBtn')){selectedRichRange=null;if(!markerMode)$('highlightDock').hidden=true}});
 }
 
-const SECTION_FIELDS={tropes:'bookTropes',summary:'bookSummary',review:'bookReview',quotes:'bookQuotes'};
+const SECTION_FIELDS={tropes:'bookTropes',summary:'bookSummary',review:'bookReview',quotes:'bookQuotes',scenes:'bookScenes'};
 
 // These soft background and deep border colors are selectable independently per card.
-const CARD_NAMES={tropes:'Tropes',summary:'Summary',review:'My Review',quotes:'Favourite Quotes',fanart:'Fan Art & Moodboard'};
+const CARD_NAMES={tropes:'Tropes',summary:'Summary',review:'My Review',quotes:'Favourite Quotes',scenes:'Favourite Scenes',fanart:'Fan Art & Moodboard'};
 const PASTEL_COLORS=[
 {name:'Ice blue',code:'#E3EDF6'},{name:'Misty blue',code:'#DCE6F0'},
 {name:'Dusty pink',code:'#F3E3E8'},{name:'Soft rose',code:'#F6E6E5'},
@@ -1738,7 +1782,7 @@ function setupPanelResize(){
 
 // ─── v1.8.8: configurable book sections ───────────────────────────
 // v1.9.3 preview: simple, fixed card layout. Preserve font sizes, independent card visibility, and original height handles.
-const BOX_KEYS=['tropes','summary','review','quotes','fanart'];
+const BOX_KEYS=['tropes','summary','review','quotes','scenes','fanart'];
 let boxArrangeActive=false;
 function setBoxArrangeActive(_value){boxArrangeActive=false;}
 function renderBoxCustomization(b){
@@ -1878,9 +1922,9 @@ function closeModal(id){$(id).classList.remove('open')}
 function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('on'),2200)}
 function readAsDataURL(file,type='cover'){return new Promise((resolve,reject)=>{if(!file){resolve(null);return}const reader=new FileReader();reader.onerror=()=>reject(Error('Could not read image'));reader.onload=()=>{const img=new Image();img.onerror=()=>reject(Error('Image is not valid'));img.onload=()=>{const max=type==='cover'?900:type==='fan'?1250:750,scale=Math.min(1,max/Math.max(img.width,img.height));const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(img.width*scale));canvas.height=Math.max(1,Math.round(img.height*scale));const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,canvas.width,canvas.height);const format=type==='sticker'?'image/png':'image/jpeg';resolve(canvas.toDataURL(format,type==='fan'?.84:type==='cover'?.84:undefined))};img.src=reader.result};reader.readAsDataURL(file)})}
 function exportBackup(){const blob=new Blob([JSON.stringify({format:'blue-reading-journal',version:1,exportedAt:new Date().toISOString(),data})],{type:'application/json'});const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='my-reading-journal-backup.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2500);toast('Backup ready 💙')}
-async function importBackup(file){try{const raw=JSON.parse(await file.text());if(raw.format!=='blue-reading-journal'||!raw.data||!Array.isArray(raw.data.books))throw Error('Backup file is invalid');if(!confirm('Replace your current library with this backup?'))return;data={books:raw.data.books.filter(b=>b&&typeof b.id==='string').map(b=>({...b,theme:safeColor(b.theme),rating:Math.min(5,Math.max(0,Number(b.rating)||0)),stickers:Array.isArray(b.stickers)?b.stickers:[],fanarts:Array.isArray(b.fanarts)?b.fanarts:[],sectionFonts:b.sectionFonts&&typeof b.sectionFonts==='object'?b.sectionFonts:{},boxHeights:b.boxHeights&&typeof b.boxHeights==='object'?b.boxHeights:{},panelColors:b.panelColors&&typeof b.panelColors==='object'?b.panelColors:{},highlights:Object.fromEntries(['tropes','summary','review','quotes'].map(k=>[k,safeHighlightRanges(b.highlights?.[k],String(b[k]??''))])),pageTheme:getPageTheme(b).color,vibePreset:typeof b.vibePreset==='string'?b.vibePreset:DEFAULT_VIBE,vibeCustom:typeof b.vibeCustom==='string'?b.vibeCustom:'',locked:b.locked===true,stickersLocked:b.stickersLocked===true,series:String(b.series||''),volume:String(b.volume||''),started:typeof b.started==='string'?b.started:'',status:normalizedReadingStatus(b),tags:String(b.tags||''),favorite:!!b.favorite,formats:{physical:!!b.formats?.physical,audio:!!b.formats?.audio}})),seriesRatings:cleanSeriesRatings(raw.data.seriesRatings),seriesTotals:cleanSeriesTotals(raw.data.seriesTotals),customFontData:raw.data.customFontData||null,customFontName:raw.data.customFontName||null};await loadCustomFont();page=0;await saveNow();closeModal('settingsModal');showHome();toast('Library restored ✓')}catch(err){toast('Could not restore this backup ⚠️')}}
+async function importBackup(file){try{const raw=JSON.parse(await file.text());if(raw.format!=='blue-reading-journal'||!raw.data||!Array.isArray(raw.data.books))throw Error('Backup file is invalid');if(!confirm('Replace your current library with this backup?'))return;data={books:raw.data.books.filter(b=>b&&typeof b.id==='string').map(b=>({...b,theme:safeColor(b.theme),rating:Math.min(5,Math.max(0,Number(b.rating)||0)),stickers:Array.isArray(b.stickers)?b.stickers:[],fanarts:Array.isArray(b.fanarts)?b.fanarts:[],sectionFonts:b.sectionFonts&&typeof b.sectionFonts==='object'?b.sectionFonts:{},boxHeights:b.boxHeights&&typeof b.boxHeights==='object'?b.boxHeights:{},panelColors:b.panelColors&&typeof b.panelColors==='object'?b.panelColors:{},highlights:Object.fromEntries(['tropes','summary','review','quotes','scenes'].map(k=>[k,safeHighlightRanges(b.highlights?.[k],String(b[k]??''))])),pageTheme:getPageTheme(b).color,vibePreset:typeof b.vibePreset==='string'?b.vibePreset:DEFAULT_VIBE,vibeCustom:typeof b.vibeCustom==='string'?b.vibeCustom:'',locked:b.locked===true,stickersLocked:b.stickersLocked===true,series:String(b.series||''),volume:String(b.volume||''),started:typeof b.started==='string'?b.started:'',status:normalizedReadingStatus(b),tags:String(b.tags||''),favorite:!!b.favorite,formats:{physical:!!b.formats?.physical,audio:!!b.formats?.audio}})),seriesRatings:cleanSeriesRatings(raw.data.seriesRatings),seriesTotals:cleanSeriesTotals(raw.data.seriesTotals),customFontData:raw.data.customFontData||null,customFontName:raw.data.customFontName||null};await loadCustomFont();page=0;await saveNow();closeModal('settingsModal');showHome();toast('Library restored ✓')}catch(err){toast('Could not restore this backup ⚠️')}}
 // User input handlers
-for(const [id,key] of [['bookTitle','title'],['bookAuthor','author'],['bookGenre','genre'],['bookStatus','status'],['bookTags','tags'],['bookStarted','started'],['bookDate','date'],['bookPages','pages'],['bookSeries','series'],['bookVolume','volume'],['bookSummary','summary'],['bookReview','review'],['bookQuotes','quotes'],['bookTropes','tropes']]){$(id).addEventListener('input',ev=>{const b=book();if(b){if(id==='bookSeries'){
+for(const [id,key] of [['bookTitle','title'],['bookAuthor','author'],['bookGenre','genre'],['bookStatus','status'],['bookTags','tags'],['bookStarted','started'],['bookDate','date'],['bookPages','pages'],['bookSeries','series'],['bookVolume','volume'],['bookSummary','summary'],['bookReview','review'],['bookQuotes','quotes'],['bookTropes','tropes'],['bookScenes','scenes']]){$(id).addEventListener('input',ev=>{const b=book();if(b){if(id==='bookSeries'){
  const previousKey=seriesRatingKey(b.series),newKey=seriesRatingKey(ev.target.value);
  if(previousKey!==newKey&&data.seriesRatings?.[previousKey]&&!data.books.some(other=>other.id!==b.id&&seriesRatingKey(other.series)===previousKey)&&!data.seriesRatings[newKey]){
   data.seriesRatings[newKey]=data.seriesRatings[previousKey];delete data.seriesRatings[previousKey]
@@ -1893,7 +1937,7 @@ for(const [id,key] of [['bookTitle','title'],['bookAuthor','author'],['bookGenre
 $('bookFont').addEventListener('change',e=>{const b=book();if(b){b.font=e.target.value;renderStyle(b);scheduleSave()}});
 $('fontUploadBtn').onclick=()=>$('fontFile').click();
 $('fontFile').onchange=async e=>{const file=e.target.files[0];e.target.value='';if(!file)return;if(file.size>4500000){toast('Font must be smaller than 4.5 MB');return}if(!/\.(ttf|otf|woff2?)$/i.test(file.name)){toast('Unsupported font format');return}try{const raw=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsDataURL(file)});const f=new FontFace('JournalCustomFont',`url(${raw})`);await f.load();document.fonts.add(f);data.customFontData=raw;data.customFontName=file.name;const b=book();if(b){b.font='custom';renderStyle(b)}scheduleSave();toast('Custom font added ✓')}catch{toast('This font could not be loaded')}};
-$('newBookForm').addEventListener('submit',async ev=>{ev.preventDefault();const title=$('newTitle').value.trim();if(!title)return;const submit=ev.target.querySelector('button[type=submit]');submit.disabled=true;const cover=pendingNewCover;const b={id:uid(),title,author:$('newAuthor').value.trim(),genre:'',tags:'',status:$('newBookStatus').value,date:'',started:'',pages:'',rating:0,font:'simple',summary:'',review:'',quotes:'',tropes:'',cover,theme:themes[data.books.length%themes.length],stickers:[],fanarts:[],sectionFonts:{},boxHeights:{},panelColors:{},highlights:{},series:'',volume:'',favorite:false,pageTheme:PAGE_DEFAULT,vibePreset:DEFAULT_VIBE,vibeCustom:'',locked:false,stickersLocked:false,formats:{physical:false,audio:false}};data.books.push(b);page=Math.floor((data.books.length-1)/booksPerPage());await saveNow();closeModal('bookModal');showReview(b.id);submit.disabled=false;toast('Book added ✦')});
+$('newBookForm').addEventListener('submit',async ev=>{ev.preventDefault();const title=$('newTitle').value.trim();if(!title)return;const submit=ev.target.querySelector('button[type=submit]');submit.disabled=true;const cover=pendingNewCover;const b={id:uid(),title,author:$('newAuthor').value.trim(),genre:'',tags:'',status:$('newBookStatus').value,date:'',started:'',pages:'',rating:0,font:'simple',summary:'',review:'',quotes:'',tropes:'',scenes:'',cover,theme:themes[data.books.length%themes.length],stickers:[],fanarts:[],sectionFonts:{},boxHeights:{},panelColors:{},highlights:{},series:'',volume:'',favorite:false,pageTheme:PAGE_DEFAULT,vibePreset:DEFAULT_VIBE,vibeCustom:'',locked:false,stickersLocked:false,formats:{physical:false,audio:false}};data.books.push(b);page=Math.floor((data.books.length-1)/booksPerPage());await saveNow();closeModal('bookModal');showReview(b.id);submit.disabled=false;toast('Book added ✦')});
 $('addTopBtn').onclick=()=>openModal('bookModal');$('settingsBtn').onclick=()=>openModal('settingsModal');
 document.querySelectorAll('[data-close]').forEach(el=>el.onclick=()=>closeModal(el.dataset.close));document.querySelectorAll('.overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)closeModal(el.id)}));
 $('prevBtn').onclick=()=>{if(page>0){page--;renderLibrary('page-turn-prev')}};$('nextBtn').onclick=()=>{if(page<Math.ceil(libraryResults().length/booksPerPage())-1){page++;renderLibrary('page-turn-next')}};
@@ -2141,7 +2185,7 @@ function renderFavorites(){const v=$('collectionView'),favs=data.books.filter(b=
 function collectionOpenEvents(root){root.querySelectorAll('[data-book]').forEach(btn=>btn.onclick=()=>showReview(btn.dataset.book))}
 function renderCollection(){switch(activeTab){case'stats':renderStats();break;case'series':renderSeries();break;case'quotes':renderQuotes();break;case'favorites':renderFavorites();break;default:break}}
 // Separate export keeps a pretty sharable reading card without duplicating book storage.
-function exportCard(b){const theme=getPageTheme(b),dark=!!theme.dark,base=dark?'#f5eee5':'#20394f',caption=b.vibeCustom||b.vibePreset||'';const parts=['tropes','summary','review','quotes'];const panels=parts.map(section=>{const col=cardColors(b,section),text=String(b[section]||'');return `<section class="export-section" style="background:${col.bg||'#f6f4ef'};border-color:${col.border||'#b8c6ca'}"><h3>${escapeHTML(CARD_NAMES[section].toUpperCase())}</h3><div class="export-copy" dir="auto" style="font-family:${fontFamilies[b.sectionFonts?.[section]]||fontFamilies[b.font]||fontFamilies.simple}">${htmlQuoteHighlights(text,b.highlights?.[section]||[],0)||'&nbsp;'}</div></section>`}).join('');const images=(b.fanarts||[]).map(f=>`<img alt="Fan art" src="${f.content}"/>`).join(''),stickers=(b.stickers||[]).map(s=>s.kind==='image'?`<img alt="Sticker" src="${s.content}"/>`:`<span>${escapeHTML(s.content)}</span>`).join('');return `<article class="export-sheet" xmlns="http://www.w3.org/1999/xhtml" style="--sheet-bg:${theme.color};--sheet-text:${base}"><div class="sheet-subtitle">MY READING JOURNAL ✦ A LITTLE STORY</div><h1>Book Review</h1><div class="export-header"><div class="export-cover" style="background:${safeColor(b.theme)}">${b.cover?`<img alt="Cover" src="${b.cover}"/>`:escapeHTML(b.title||'Untitled')}</div><div class="export-book-meta"><h2 dir="auto">${escapeHTML(b.title||'Untitled')}</h2><div dir="auto">${escapeHTML(b.author||'')}</div>${b.genre?`<div>${escapeHTML(b.genre)}</div>`:''}${b.series?`<div dir="auto">${escapeHTML(b.series)}${b.volume?' · Vol. '+escapeHTML(b.volume):''}</div>`:''}${b.started?`<div>Started: ${escapeHTML(b.started)}</div>`:''}<div>Status: ${READING_STATUSES[normalizedReadingStatus(b)].title}</div>${b.tags?`<div>Tags: ${escapeHTML(b.tags)}</div>`:''}${b.date?`<div>Finished: ${escapeHTML(b.date)}</div>`:''}${readingDurationDays(b)>0?`<div>Reading time: ${readingDurationDays(b)} days</div>`:''}${b.pages?`<div>${escapeHTML(b.pages)} pages</div>`:''}<div class="stars">${'★'.repeat(Math.max(0,Math.min(5,Number(b.rating)||0)))}${'☆'.repeat(5-Math.max(0,Math.min(5,Number(b.rating)||0)))}</div><div>${b.formats?.physical?'📖 ':''}${b.formats?.audio?'🎧 ':''}${b.favorite?'♥':''}</div></div></div>${panels}${images?`<section class="export-section"><h3>FAN ART & MOODBOARD</h3><div class="export-photo-grid">${images}</div></section>`:''}${stickers?`<div class="export-sticker-strip">${stickers}</div>`:''}<div class="export-caption">${escapeHTML(caption)}</div></article>`}
+function exportCard(b){const theme=getPageTheme(b),dark=!!theme.dark,base=dark?'#f5eee5':'#20394f',caption=b.vibeCustom||b.vibePreset||'';const parts=['tropes','summary','review','quotes','scenes'];const panels=parts.map(section=>{const col=cardColors(b,section),text=String(b[section]||'');return `<section class="export-section" style="background:${col.bg||'#f6f4ef'};border-color:${col.border||'#b8c6ca'}"><h3>${escapeHTML(CARD_NAMES[section].toUpperCase())}</h3><div class="export-copy" dir="auto" style="font-family:${fontFamilies[b.sectionFonts?.[section]]||fontFamilies[b.font]||fontFamilies.simple}">${htmlQuoteHighlights(text,b.highlights?.[section]||[],0)||'&nbsp;'}</div></section>`}).join('');const images=(b.fanarts||[]).map(f=>`<img alt="Fan art" src="${f.content}"/>`).join(''),stickers=(b.stickers||[]).map(s=>s.kind==='image'?`<img alt="Sticker" src="${s.content}"/>`:`<span>${escapeHTML(s.content)}</span>`).join('');return `<article class="export-sheet" xmlns="http://www.w3.org/1999/xhtml" style="--sheet-bg:${theme.color};--sheet-text:${base}"><div class="sheet-subtitle">MY READING JOURNAL ✦ A LITTLE STORY</div><h1>Book Review</h1><div class="export-header"><div class="export-cover" style="background:${safeColor(b.theme)}">${b.cover?`<img alt="Cover" src="${b.cover}"/>`:escapeHTML(b.title||'Untitled')}</div><div class="export-book-meta"><h2 dir="auto">${escapeHTML(b.title||'Untitled')}</h2><div dir="auto">${escapeHTML(b.author||'')}</div>${b.genre?`<div>${escapeHTML(b.genre)}</div>`:''}${b.series?`<div dir="auto">${escapeHTML(b.series)}${b.volume?' · Vol. '+escapeHTML(b.volume):''}</div>`:''}${b.started?`<div>Started: ${escapeHTML(b.started)}</div>`:''}<div>Status: ${READING_STATUSES[normalizedReadingStatus(b)].title}</div>${b.tags?`<div>Tags: ${escapeHTML(b.tags)}</div>`:''}${b.date?`<div>Finished: ${escapeHTML(b.date)}</div>`:''}${readingDurationDays(b)>0?`<div>Reading time: ${readingDurationDays(b)} days</div>`:''}${b.pages?`<div>${escapeHTML(b.pages)} pages</div>`:''}<div class="stars">${'★'.repeat(Math.max(0,Math.min(5,Number(b.rating)||0)))}${'☆'.repeat(5-Math.max(0,Math.min(5,Number(b.rating)||0)))}</div><div>${b.formats?.physical?'📖 ':''}${b.formats?.audio?'🎧 ':''}${b.favorite?'♥':''}</div></div></div>${panels}${images?`<section class="export-section"><h3>FAN ART & MOODBOARD</h3><div class="export-photo-grid">${images}</div></section>`:''}${stickers?`<div class="export-sticker-strip">${stickers}</div>`:''}<div class="export-caption">${escapeHTML(caption)}</div></article>`}
 function showExport(){const b=book();if(!b)return;const preview=$('exportPreview');preview.innerHTML=exportCard(b);openModal('exportModal');preview.scrollTop=0}
 $('exportReviewBtn').onclick=showExport;
 function sanitizeFilename(s){return String(s||'book').replace(/[\\/:*?"<>|]/g,'').trim().slice(0,80)||'book'}
@@ -2155,7 +2199,7 @@ async function exportAsPng(){
   const meas=document.createElement('canvas').getContext('2d');
   const fontFor=(section)=>{const value=b.sectionFonts?.[section]||b.font||'simple';const actual=value==='inherit'?b.font||'simple':value;return fontFamilies[actual]||fontFamilies.simple};
   function wrap(text,font,width){meas.font=font;const lines=[];let cursor=0;for(const para of String(text||'').split('\n')){if(!para){lines.push({text:'',start:cursor,rtl:false});cursor++;continue}const rtl=/[\u0590-\u08FF]/.test((para.match(/[\p{L}]/u)||[])[0]||'');const bits=[...para.matchAll(/\S+\s*/g)];let line='',start=cursor;for(const m of bits){const addition=m[0];if(line&&meas.measureText(line+addition).width>width){lines.push({text:line.trimEnd(),start,rtl});start=cursor+m.index;line=addition}else if(!line){line=addition;start=cursor+m.index}else line+=addition}lines.push({text:line.trimEnd(),start,rtl});cursor+=para.length+1}return lines}
-  const sections=['tropes','summary','review','quotes'];const prepared=sections.map(k=>{const font='13px '+fontFor(k),content=String(b[k]||''),lines=wrap(content,font,inner-32),h=Math.max(82,47+Math.max(1,lines.length)*21);return {section:k,font,lines,height:h,content,col:cardColors(b,k)}});
+  const sections=['tropes','summary','review','quotes','scenes'];const prepared=sections.map(k=>{const font='13px '+fontFor(k),content=String(b[k]||''),lines=wrap(content,font,inner-32),h=Math.max(82,47+Math.max(1,lines.length)*21);return {section:k,font,lines,height:h,content,col:cardColors(b,k)}});
   const art=(b.fanarts||[]).filter(f=>f.content),stickers=(b.stickers||[]).filter(st=>st.content);
   let height=30+18+39+14+172+15+prepared.reduce((n,v)=>n+v.height+12,0)+ (art.length?42+Math.ceil(art.length/3)*126+14:0)+(stickers.length?35+Math.ceil(stickers.length/6)*64+12:0)+70;
   if(height>14000)throw Error('Too many pages for one PNG; try PDF');
