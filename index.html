@@ -684,6 +684,16 @@ body.dragging{overscroll-behavior:none}
 .scene-divider{height:24px;display:flex;align-items:center;justify-content:center;gap:8px;color:#a58b69;opacity:.75;direction:ltr}
 .scene-divider:before,.scene-divider:after{content:'';width:36px;height:1px;background:currentColor;opacity:.55}
 .review-body.theme-dark .scene-divider{color:#dec6a0}
+/* v1.9.5: unobtrusive, live Quote Vault search. */
+.quote-vault-search{display:flex;align-items:center;gap:10px;margin:0 0 8px;padding:7px 10px;background:#e7eeef;border:1px solid #cddbdd;border-radius:12px;transition:border-color .2s,box-shadow .2s}
+.quote-vault-search:focus-within{border-color:#809db0;box-shadow:0 0 0 3px #91afbd28}
+.quote-search-icon{font-size:18px;color:#6c8798;flex:none;line-height:1}
+.quote-vault-search input{min-width:0;flex:1;padding:8px 2px;background:transparent;color:#253e55;font:13px/1.5 system-ui,sans-serif;border:0;outline:0}
+.quote-vault-search input::placeholder{color:#8498a5;opacity:1}
+.quote-search-clear{border:0;border-radius:8px;background:#d9e5e8;color:#38566e;padding:8px 11px;font:12px system-ui,sans-serif;cursor:pointer}
+.quote-search-clear[hidden]{display:none!important}
+.quote-search-caption{color:#778d9c;font:11px/1.5 system-ui,sans-serif;margin:0 0 16px}
+@media(min-width:700px){.quote-vault-search{max-width:670px}.quote-vault-search input{font-size:14px}}
 </style>
 </head>
 <body>
@@ -824,7 +834,7 @@ Leave one blank line to begin another scene."></textarea>
 <p class="modal-note">Your books are stored locally in this browser. Clearing site data may erase them. Export backups regularly.</p>
 <div class="bottom-buttons"><button class="primary" id="exportBtn">↓ Export backup</button><button class="secondary" id="importBtn">↑ Restore</button></div><input type="file" id="importFile" accept="application/json,.json" hidden />
 <p class="modal-note">Your backup includes reading statuses, tags, your book order, reviews, covers, favorites, series, highlights and stickers. Save it somewhere safe.</p>
-<div class="panel" style="margin-top:20px"><div class="panel-title">ABOUT YOUR JOURNAL</div><div class="modal-note">Version 1.9.2 Preview · Hidden Sticker Toolbar & Stable Positions · Multiple genres, TBR Roulette, genre choice, no-repeat draws, series progress and personal series ratings, draggable book order, reading statuses and filters, adaptive mobile and desktop layouts, highlighting, fan art and stickers. Data stays on this device until you export it.</div></div>
+<div class="panel" style="margin-top:20px"><div class="panel-title">ABOUT YOUR JOURNAL</div><div class="modal-note">Version 1.9.5 · Hidden Sticker Toolbar & Stable Positions · Multiple genres, TBR Roulette, genre choice, no-repeat draws, series progress and personal series ratings, draggable book order, reading statuses and filters, adaptive mobile and desktop layouts, highlighting, fan art and stickers. Data stays on this device until you export it.</div></div>
 </div></div>
 <div class="overlay" id="panelColorsModal" role="dialog" aria-modal="true" aria-label="Choose card colours"><div class="modal"><div class="modal-header"><button class="close-btn" type="button" data-close="panelColorsModal">×</button><div><div class="eyebrow">COLOUR YOUR STORY</div><h3>Card Colours</h3></div></div><p class="modal-note" id="colorTargetLabel">Colours for this card only ✦</p><div class="color-control-row"><div><div class="color-control-label">🌷 Pastel background</div><div class="color-swatches" id="backgroundSwatches"></div></div><div><div class="color-control-label">🌑 Deep border</div><div class="color-swatches" id="borderSwatches"></div></div></div><div class="color-preview" id="boxColorPreview">Card colour preview ✦</div><div class="color-actions"><button type="button" class="secondary" id="colorResetBtn">Reset to default</button><button type="button" class="primary" id="colorDoneBtn">Done ✓</button></div></div></div>
 <div class="overlay" id="cropModal" role="dialog" aria-modal="true" aria-label="Crop book cover"><div class="modal crop-modal"><div class="modal-header"><button class="close-btn" type="button" id="cropCloseBtn" aria-label="Cancel">×</button><div><div class="eyebrow">MAKE IT FIT</div><h3>Crop your cover</h3></div></div><p class="crop-tip" id="cropTip">For book covers ✂ Move the image with your S Pen or finger, and zoom below.</p><div class="crop-aspect-options" id="cropAspectOptions" hidden><button type="button" data-ratio="1" class="active">Square</button><button type="button" data-ratio="0.75">Portrait</button><button type="button" data-ratio="1.333333">Landscape</button></div><div class="crop-workarea"><div class="crop-stage" id="cropStage" aria-label="Drag photo within the crop frame"><img id="cropImage" draggable="false" alt="Image selected for crop"/><div class="crop-guide" aria-hidden="true"></div></div></div><label class="crop-zoom-row" for="cropZoom">Zoom <input id="cropZoom" type="range" min="1" max="3.5" step="0.01" value="1"/><span id="cropZoomLabel">1×</span></label><div class="crop-actions"><button class="secondary" type="button" id="cropCancelBtn">Cancel</button><button class="secondary" type="button" id="cropResetBtn">Reset</button><button class="primary" type="button" id="cropSaveBtn">Apply crop ✓</button></div></div></div>
@@ -882,7 +892,7 @@ Leave one blank line to begin another scene."></textarea>
 <script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id), DB_NAME='blue-reading-journal-v1';
-const COLLECTION_VERSION='1.9.4';
+const COLLECTION_VERSION='1.9.5';
 const booksPerPage=()=>window.matchMedia('(min-width:960px)').matches?12:9;
 const themes=['#253a57','#794858','#7b8979','#6d6789','#4d6c80','#846e5b'];
 const initialData=()=>({books:[],seriesRatings:{},seriesTotals:{}});
@@ -2180,7 +2190,35 @@ function renderSeries(){
  });
 
 }
-function renderQuotes(){const v=$('collectionView'),quotes=[];for(const b of data.books){const text=String(b.quotes||'');const re=/[^\n]+/g;for(const m of text.matchAll(re)){if(m[0].trim())quotes.push({b,text:m[0].trim(),offset:m.index+m[0].indexOf(m[0].trim())})}}v.innerHTML=`<h2 class="collection-heading">Quote Vault</h2><p class="collection-note">Little lines you never want to forget. Tap any book title to return to its page. ✦</p>${quotes.length?`<div class="collection-cards">${quotes.map(q=>`<article class="collection-card quote-card"><div class="quote-text" dir="auto">“${htmlQuoteHighlights(q.text,q.b.highlights?.quotes,q.offset)}”</div><button type="button" class="open-link" data-book="${escapeHTML(q.b.id)}">${escapeHTML(q.b.title)} ↗</button></article>`).join('')}</div>`:emptyCollection('Write quotes in any book review and they will appear here.')}`;collectionOpenEvents(v)}
+// v1.9.5: search quote text and book title / author without changing saved books.
+// Persian/Arabic ی and ک variants and diacritic marks should not break searches.
+function normalizeQuoteSearch(value){return String(value??'').normalize('NFKC').replace(/[يى]/g,'ی').replace(/ك/g,'ک').replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g,'').replace(/\u200c/g,' ').replace(/\s+/g,' ').trim().toLocaleLowerCase()}
+let quoteSearchTerm='';
+function renderQuotes(){
+ const v=$('collectionView'),quotes=[];
+ for(const b of data.books){
+  const text=String(b.quotes||'');
+  for(const m of text.matchAll(/[^\n]+/g)){
+   const trimmed=m[0].trim();
+   if(trimmed)quotes.push({b,text:trimmed,offset:m.index+m[0].indexOf(trimmed)});
+  }
+ }
+ v.innerHTML=`<h2 class="collection-heading">Quote Vault</h2><p class="collection-note">Little lines you never want to forget. Tap any book title to return to its page. ✦</p><div class="quote-vault-search" role="search"><span class="quote-search-icon" aria-hidden="true">⌕</span><input id="quoteVaultSearch" type="search" autocomplete="off" placeholder="Search a quote or book…" aria-label="Search quote text, book title or author" value="${escapeHTML(quoteSearchTerm)}"/><button type="button" id="quoteSearchClear" class="quote-search-clear" aria-label="Clear quote search" hidden>Clear ×</button></div><p id="quoteSearchCount" class="quote-search-caption" role="status" aria-live="polite"></p><div id="quoteSearchResults"></div>`;
+ const search=$('quoteVaultSearch'),results=$('quoteSearchResults'),count=$('quoteSearchCount'),clear=$('quoteSearchClear');
+ function updateResults(){
+  const term=normalizeQuoteSearch(search.value);quoteSearchTerm=search.value;
+  const matched=term?quotes.filter(q=>[q.text,q.b.title,q.b.author].some(v=>normalizeQuoteSearch(v).includes(term))):quotes;
+  clear.hidden=!search.value;
+  count.textContent=quotes.length?term?`${matched.length} of ${quotes.length} quotes found`:`${quotes.length} saved ${quotes.length===1?'quote':'quotes'}`:'';
+  if(!quotes.length)results.innerHTML=emptyCollection('Write quotes in any book review and they will appear here.');
+  else if(!matched.length)results.innerHTML=emptyCollection('No quotes found. Try another word or book title. ✦');
+  else results.innerHTML=`<div class="collection-cards">${matched.map(q=>`<article class="collection-card quote-card"><div class="quote-text" dir="auto">“${htmlQuoteHighlights(q.text,q.b.highlights?.quotes,q.offset)}”</div><button type="button" class="open-link" data-book="${escapeHTML(q.b.id)}">${escapeHTML(q.b.title||'Untitled')} ↗</button></article>`).join('')}</div>`;
+  collectionOpenEvents(results);
+ }
+ search.addEventListener('input',updateResults);
+ clear.addEventListener('click',()=>{search.value='';quoteSearchTerm='';updateResults();search.focus()});
+ updateResults();
+}
 function renderFavorites(){const v=$('collectionView'),favs=data.books.filter(b=>b.favorite);v.innerHTML=`<h2 class="collection-heading">Hall of Favorites ♥</h2><p class="collection-note">A little shelf for the stories that stayed with you, beyond the stars. ✦</p>${favs.length?`<div class="collection-cards">${favs.map(b=>`<article class="collection-card">${cardMini(b)}<button type="button" class="open-link" data-book="${escapeHTML(b.id)}">Open review ↗</button></article>`).join('')}</div>`:emptyCollection('Tap the heart on a book review to add it here.')}`;collectionOpenEvents(v)}
 function collectionOpenEvents(root){root.querySelectorAll('[data-book]').forEach(btn=>btn.onclick=()=>showReview(btn.dataset.book))}
 function renderCollection(){switch(activeTab){case'stats':renderStats();break;case'series':renderSeries();break;case'quotes':renderQuotes();break;case'favorites':renderFavorites();break;default:break}}
