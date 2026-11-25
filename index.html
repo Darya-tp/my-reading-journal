@@ -439,10 +439,11 @@ body.dragging{overscroll-behavior:none}
 .arrange-toggle:hover{background:#dce6e9}.arrange-toggle.active{color:#fff;background:#263d57;border-color:#263d57}
 .arrange-hint{font-size:11px;line-height:1.55;color:#5c7485;flex:1 1 160px}
 .library-grid.is-arranging{min-height:0;overflow:visible;padding-top:7px;}
-.library-grid.is-arranging .arrange-book{touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;position:relative;border-radius:6px;outline-offset:2px}
+.library-grid.is-arranging .arrange-book{touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;position:relative;border-radius:6px;outline-offset:2px}
 .library-grid.is-arranging .arrange-book *{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;pointer-events:none}
 .library-grid.is-arranging .arrange-book .cover{box-shadow:3px 5px 12px #203e5638,0 0 0 2px #92aaba;transition:box-shadow .13s,transform .13s}
-.library-grid.is-arranging .arrange-book:after{content:'⠿';position:absolute;top:5px;right:5px;min-width:27px;height:27px;border-radius:50%;background:#233c56e9;color:#fff;display:grid;place-items:center;box-shadow:0 2px 8px #15263870;font:700 19px/1 system-ui;pointer-events:none}
+.library-grid.is-arranging .arrange-book .arrange-grip{position:absolute;top:2px;right:2px;width:42px;height:42px;border-radius:50%;background:#233c56ef;color:#fff;display:grid;place-items:center;box-shadow:0 2px 8px #15263870;font:700 23px/1 system-ui;pointer-events:auto;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;z-index:4;cursor:grab}
+.library-grid.is-arranging .arrange-book .arrange-grip:active{cursor:grabbing;background:#385d7b}
 .library-grid.is-arranging .arrange-book.is-arrange-source{opacity:.35}
 .library-grid.is-arranging .arrange-book.is-arrange-target .cover{outline:3px dashed #2d6382;outline-offset:4px;transform:translateY(-3px)}
 .library-grid.is-arranging .arrange-book.is-arrange-selected .cover{outline:3px solid #ad9160;outline-offset:4px}
@@ -737,7 +738,7 @@ body.dragging{overscroll-behavior:none}
           <div class="library-format-filters"><label><input type="checkbox" id="libraryAudioFilter"/> Audiobook</label><label><input type="checkbox" id="libraryPhysicalFilter"/> Physical book</label></div>
           <div class="filter-panel-actions"><button type="button" class="filter-clear" id="clearLibraryFilters">Clear filters</button><button type="button" class="filter-done" id="doneLibraryFilters">Done ✓</button></div>
         </section>
-        <div class="arrange-toolbar"><button id="arrangeToggleBtn" type="button" class="arrange-toggle" aria-pressed="false">⠿ Arrange Books</button><span id="arrangeHint" class="arrange-hint" hidden>Drag a cover to move it. Or tap one book, then another. ✦</span></div>
+        <div class="arrange-toolbar"><button id="arrangeToggleBtn" type="button" class="arrange-toggle" aria-pressed="false">⠿ Arrange Books</button><span id="arrangeHint" class="arrange-hint" hidden>Swipe to scroll. Drag from the ⠿ handle to move a book, or tap one book and then its destination. ✦</span></div>
         <div class="divider-lines library-grid-divider"></div>
       <div id="libraryGrid" class="library-grid" aria-label="Library"></div>
       <div class="pagination" id="libraryPagination"><button class="page-btn" id="prevBtn" aria-label="Previous page">‹</button><div class="page-index" id="pageCount">01 / 01</div><button class="page-btn" id="nextBtn" aria-label="Next page">›</button></div>
@@ -892,7 +893,7 @@ Leave one blank line to begin another scene."></textarea>
 <script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id), DB_NAME='blue-reading-journal-v1';
-const COLLECTION_VERSION='1.9.5';
+const COLLECTION_VERSION='1.9.7';
 const booksPerPage=()=>window.matchMedia('(min-width:960px)').matches?12:9;
 const themes=['#253a57','#794858','#7b8979','#6d6789','#4d6c80','#846e5b'];
 const initialData=()=>({books:[],seriesRatings:{},seriesTotals:{}});
@@ -973,7 +974,7 @@ function libraryResults(){
  if(tag!=='all')books=books.filter(b=>bookTags(b).some(t=>t.toLocaleLowerCase()===tag));
  if($('libraryAudioFilter').checked)books=books.filter(b=>!!b.formats?.audio);
  if($('libraryPhysicalFilter').checked)books=books.filter(b=>!!b.formats?.physical);
- switch($('librarySort').value){case'title':books.sort((a,b)=>String(a.title||'').localeCompare(String(b.title||'')));break;case'rating':books.sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0));break;case'date':books.sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));break;case'latest':books.reverse();break;default:break}
+ switch($('librarySort').value){case'title':books.sort((a,b)=>String(a.title||'').localeCompare(String(b.title||'')));break;case'rating':books.sort((a,b)=>(Number(b.rating)||0)-(Number(a.rating)||0));break;case'date':books.sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));break;case'latest':books.sort((a,b)=>(Number(b.createdAt)||0)-(Number(a.createdAt)||0));break;default:break}
  return books
 }
 function fillLibraryFilterSelect(id,values,allText){const sel=$(id),old=sel.value;sel.replaceChildren(new Option(allText,'all'));for(const v of values){sel.add(new Option(v,v.toLocaleLowerCase()))}sel.value=values.some(v=>v.toLocaleLowerCase()===old)?old:'all'}
@@ -1000,7 +1001,7 @@ $('closeLibraryFilters').addEventListener('click',()=>setFilterPanel(false));
 $('doneLibraryFilters').addEventListener('click',()=>setFilterPanel(false));
 $('libraryFilterPanel').addEventListener('keydown',e=>{if(e.key==='Escape'){setFilterPanel(false);$('libraryFilterToggle').focus()}});
 
-function bookTile(b){const div=document.createElement('div');div.className='book-tile';div.dataset.bookId=b.id;div.innerHTML=`<button type="button" class="cover-button" aria-label="Open review for ${escapeHTML(b.title)}"><div class="cover" style="background:${safeColor(b.theme)}">${coverHTML(b)}</div></button>${b.favorite?'<span class="library-fav-badge">♥</span>':''}${normalizedReadingStatus(b)!=='completed'?`<span class="library-status-badge badge-${normalizedReadingStatus(b)}">${READING_STATUSES[normalizedReadingStatus(b)].label}</span>`:''}<div class="starline" aria-label="${b.rating||0} stars out of five">${[1,2,3,4,5].map(i=>`<span class="${i<=b.rating?'':'empty'}">${i<=b.rating?'★':'☆'}</span>`).join('')}</div><div class="small-book-title">${escapeHTML(b.author||'')}</div>`;if(arrangingBooks){div.classList.add('arrange-book');div.tabIndex=0;div.setAttribute('role','button');div.setAttribute('aria-label',`Move ${b.title||'Untitled'}: drag or tap, then choose destination`);div.querySelector('.cover-button').tabIndex=-1;div.querySelector('.cover-button').setAttribute('aria-hidden','true');if(arrangeSelectedId===b.id)div.classList.add('is-arrange-selected')}else div.querySelector('.cover-button').addEventListener('click',()=>showReview(b.id));return div}
+function bookTile(b){const div=document.createElement('div');div.className='book-tile';div.dataset.bookId=b.id;div.innerHTML=`<button type="button" class="cover-button" aria-label="Open review for ${escapeHTML(b.title)}"><div class="cover" style="background:${safeColor(b.theme)}">${coverHTML(b)}</div></button>${b.favorite?'<span class="library-fav-badge">♥</span>':''}${normalizedReadingStatus(b)!=='completed'?`<span class="library-status-badge badge-${normalizedReadingStatus(b)}">${READING_STATUSES[normalizedReadingStatus(b)].label}</span>`:''}<div class="starline" aria-label="${b.rating||0} stars out of five">${[1,2,3,4,5].map(i=>`<span class="${i<=b.rating?'':'empty'}">${i<=b.rating?'★':'☆'}</span>`).join('')}</div><div class="small-book-title">${escapeHTML(b.author||'')}</div>`;if(arrangingBooks){div.classList.add('arrange-book');div.tabIndex=0;div.setAttribute('role','button');div.setAttribute('aria-label',`Move ${b.title||'Untitled'}: drag or tap, then choose destination`);div.querySelector('.cover-button').tabIndex=-1;div.querySelector('.cover-button').setAttribute('aria-hidden','true');if(arrangeSelectedId===b.id)div.classList.add('is-arrange-selected');const grip=document.createElement('span');grip.className='arrange-grip';grip.setAttribute('aria-hidden','true');grip.textContent='⠿';div.appendChild(grip)}else div.querySelector('.cover-button').addEventListener('click',()=>showReview(b.id));return div}
 function renderLibrary(anim=''){
  refreshGenreFilters();renderStatusChoices();updateFilterIndicator();const grid=$('libraryGrid');grid.className='library-grid';if(arrangingBooks)grid.classList.add('is-arranging');void grid.offsetWidth;if(anim&&!arrangingBooks)grid.classList.add(anim);
  const books=arrangingBooks?data.books:libraryResults(),filtered=activeLibraryFilters();
@@ -1085,15 +1086,23 @@ function startArrangeDrag(d){
 }
 function positionArrangeGhost(d){if(d.ghost){d.ghost.style.left=(d.x-d.offsetX)+'px';d.ghost.style.top=(d.y-d.offsetY)+'px'}}
 $('arrangeToggleBtn').addEventListener('click',()=>setArrangeMode(!arrangingBooks));
+// Touching a cover is a normal scroll or a tap-to-select. Only the ⠿ grip is a drag handle on touch.
+// Mouse and trackpad users retain dragging from any part of the tile.
 $('libraryGrid').addEventListener('pointerdown',ev=>{
  if(!arrangingBooks||arrangePointer||!ev.isPrimary||(ev.pointerType==='mouse'&&ev.button!==0))return;
  const source=ev.target.closest('.arrange-book');if(!source)return;
- ev.preventDefault();arrangePointer={pointerId:ev.pointerId,id:source.dataset.bookId,source,startX:ev.clientX,startY:ev.clientY,x:ev.clientX,y:ev.clientY,started:false,target:null,ghost:null,scrollFrame:0};
- try{source.setPointerCapture(ev.pointerId)}catch{}
+ const touchLike=ev.pointerType==='touch'||ev.pointerType==='pen';
+ const fromGrip=!!ev.target.closest('.arrange-grip');
+ const touchScrollTap=touchLike&&!fromGrip;
+ if(!touchScrollTap)ev.preventDefault();
+ arrangePointer={pointerId:ev.pointerId,id:source.dataset.bookId,source,startX:ev.clientX,startY:ev.clientY,x:ev.clientX,y:ev.clientY,started:false,target:null,ghost:null,scrollFrame:0,touchScrollTap,movedForScroll:false};
+ // Capturing the scroll area would interfere with touch scrolling on some mobile browsers.
+ if(!touchScrollTap)try{source.setPointerCapture(ev.pointerId)}catch{}
 });
 $('libraryGrid').addEventListener('pointermove',ev=>{
  const d=arrangePointer;if(!d||d.pointerId!==ev.pointerId)return;
  d.x=ev.clientX;d.y=ev.clientY;
+ if(d.touchScrollTap){if(Math.hypot(d.x-d.startX,d.y-d.startY)>9)d.movedForScroll=true;return}
  if(!d.started&&Math.hypot(d.x-d.startX,d.y-d.startY)>7)startArrangeDrag(d);
  if(d.started){ev.preventDefault();positionArrangeGhost(d);arrangeHover(d)}
 });
@@ -1101,7 +1110,7 @@ $('libraryGrid').addEventListener('pointerup',ev=>{
  const d=arrangePointer;if(!d||d.pointerId!==ev.pointerId)return;
  d.x=ev.clientX;d.y=ev.clientY;
  if(d.started){arrangeHover(d);const targetId=d.target?.dataset.bookId;const sourceId=d.id;stopArrangePointer();if(targetId&&moveArrangeBook(sourceId,targetId))toast('Book moved into place ✦')}
- else{const id=d.id;stopArrangePointer();tapArrangeBook(id)}
+ else{const id=d.id,wasScroll=d.movedForScroll;stopArrangePointer();if(!wasScroll)tapArrangeBook(id)}
 });
 $('libraryGrid').addEventListener('pointercancel',ev=>{if(arrangePointer?.pointerId===ev.pointerId)stopArrangePointer()});
 $('libraryGrid').addEventListener('lostpointercapture',ev=>{
@@ -1947,7 +1956,7 @@ for(const [id,key] of [['bookTitle','title'],['bookAuthor','author'],['bookGenre
 $('bookFont').addEventListener('change',e=>{const b=book();if(b){b.font=e.target.value;renderStyle(b);scheduleSave()}});
 $('fontUploadBtn').onclick=()=>$('fontFile').click();
 $('fontFile').onchange=async e=>{const file=e.target.files[0];e.target.value='';if(!file)return;if(file.size>4500000){toast('Font must be smaller than 4.5 MB');return}if(!/\.(ttf|otf|woff2?)$/i.test(file.name)){toast('Unsupported font format');return}try{const raw=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsDataURL(file)});const f=new FontFace('JournalCustomFont',`url(${raw})`);await f.load();document.fonts.add(f);data.customFontData=raw;data.customFontName=file.name;const b=book();if(b){b.font='custom';renderStyle(b)}scheduleSave();toast('Custom font added ✓')}catch{toast('This font could not be loaded')}};
-$('newBookForm').addEventListener('submit',async ev=>{ev.preventDefault();const title=$('newTitle').value.trim();if(!title)return;const submit=ev.target.querySelector('button[type=submit]');submit.disabled=true;const cover=pendingNewCover;const b={id:uid(),title,author:$('newAuthor').value.trim(),genre:'',tags:'',status:$('newBookStatus').value,date:'',started:'',pages:'',rating:0,font:'simple',summary:'',review:'',quotes:'',tropes:'',scenes:'',cover,theme:themes[data.books.length%themes.length],stickers:[],fanarts:[],sectionFonts:{},boxHeights:{},panelColors:{},highlights:{},series:'',volume:'',favorite:false,pageTheme:PAGE_DEFAULT,vibePreset:DEFAULT_VIBE,vibeCustom:'',locked:false,stickersLocked:false,formats:{physical:false,audio:false}};data.books.push(b);page=Math.floor((data.books.length-1)/booksPerPage());await saveNow();closeModal('bookModal');showReview(b.id);submit.disabled=false;toast('Book added ✦')});
+$('newBookForm').addEventListener('submit',async ev=>{ev.preventDefault();const title=$('newTitle').value.trim();if(!title)return;const submit=ev.target.querySelector('button[type=submit]');submit.disabled=true;const cover=pendingNewCover;const b={id:uid(),createdAt:Date.now(),title,author:$('newAuthor').value.trim(),genre:'',tags:'',status:$('newBookStatus').value,date:'',started:'',pages:'',rating:0,font:'simple',summary:'',review:'',quotes:'',tropes:'',scenes:'',cover,theme:themes[data.books.length%themes.length],stickers:[],fanarts:[],sectionFonts:{},boxHeights:{},panelColors:{},highlights:{},series:'',volume:'',favorite:false,pageTheme:PAGE_DEFAULT,vibePreset:DEFAULT_VIBE,vibeCustom:'',locked:false,stickersLocked:false,formats:{physical:false,audio:false}};data.books.unshift(b);page=0;await saveNow();closeModal('bookModal');showReview(b.id);submit.disabled=false;toast('Book added ✦')});
 $('addTopBtn').onclick=()=>openModal('bookModal');$('settingsBtn').onclick=()=>openModal('settingsModal');
 document.querySelectorAll('[data-close]').forEach(el=>el.onclick=()=>closeModal(el.dataset.close));document.querySelectorAll('.overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)closeModal(el.id)}));
 $('prevBtn').onclick=()=>{if(page>0){page--;renderLibrary('page-turn-prev')}};$('nextBtn').onclick=()=>{if(page<Math.ceil(libraryResults().length/booksPerPage())-1){page++;renderLibrary('page-turn-next')}};
